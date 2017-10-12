@@ -1,7 +1,7 @@
-package fr.univlyon1.tiw.tiw1.calendar.dao;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.dao;
 
-import fr.univlyon1.tiw.tiw1.calendar.modele.Calendar;
-import fr.univlyon1.tiw.tiw1.calendar.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Event;
 
 import java.io.*;
 
@@ -49,5 +49,11 @@ public class JSONCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
     @Override
     public void deleteEvent(Event event, Calendar calendar) {
         //TODO: à implémenter
+    }
+
+    @Override
+    public Event findEvent(Event event, Calendar calendar) {
+        //TODO à implémenter
+        return null;
     }
 }

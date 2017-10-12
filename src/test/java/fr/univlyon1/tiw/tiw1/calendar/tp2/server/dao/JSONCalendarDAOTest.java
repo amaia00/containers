@@ -1,7 +1,7 @@
-package fr.univlyon1.tiw.tiw1.calendar.dao;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.dao;
 
-import fr.univlyon1.tiw.tiw1.calendar.modele.Calendar;
-import fr.univlyon1.tiw.tiw1.calendar.modele.TestCalendarBuilder;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.TestCalendarBuilder;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
@@ -12,6 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
+import java.text.ParseException;
 
 public class JSONCalendarDAOTest {
 
@@ -28,7 +29,7 @@ public class JSONCalendarDAOTest {
     }
 
     @Before
-    public void setup() {
+    public void setup() throws ParseException {
         calendar1 = TestCalendarBuilder.calendar1();
         jDao = new JSONCalendarDAO(new File("target/test-data")); // FIXME: adapter éventuellement la construction du DAO
     }

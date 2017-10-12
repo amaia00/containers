@@ -1,15 +1,13 @@
-package fr.univlyon1.tiw.tiw1.calendar.modele;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele;
 
-import fr.univlyon1.tiw.tiw1.calendar.Config;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.dto.EventDTO;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @XmlType(propOrder = {"title", "start", "end", "description"})
 public class Event {
-
     private String title;
     private String description;
     private Date start;
@@ -17,6 +15,15 @@ public class Event {
     private String id;
 
     public Event() {
+
+    }
+
+    public Event(EventDTO eventDTO, Date start, Date end) {
+        this.title = eventDTO.getTitle();
+        this.description = eventDTO.getDescription();
+        this.id = eventDTO.getId();
+        this.start = start;
+        this.end = end;
     }
 
     public Event(String title, String description, Date start, Date end, String id) {
@@ -68,24 +75,26 @@ public class Event {
         this.id = id;
     }
 
-    private String formatDate(Date d) {
-        return new SimpleDateFormat(Config.defaultCfg.getProperty(Config.DATE_FORMAT)).format(d);
-    }
-
-    public String getInfos() {
-        String infos = "Title: " + getTitle();
-        infos += "\nDescription: " + getDescription();
-        infos += "\nStart: " + formatDate(getStart());
-        infos += "\nEnd: " + formatDate(getEnd());
-        return infos;
-    }
-
     // Pour la comparaison dans la suppression
-    //On approxime les dates à la précision du format près, ça suffit bien...
+    // On approxime les dates à la précision du format près, ça suffit bien...
     @Override
     public boolean equals(Object o) {
-        Event e = (Event) o;
-        return this.title.equals(e.title) && this.description.equals(e.description)
-                && formatDate(this.start).equals(formatDate(e.start)) && formatDate(this.end).equals(formatDate(e.end));
+        if (this == o)
+            return true;
+
+        if (o == null)
+            return false;
+
+        if (this.getClass() != o.getClass())
+            return false;
+
+        Event event = (Event) o;
+
+        long durationStart = this.start.getTime() - event.getStart().getTime();
+        long durationEnd = this.end.getTime() - event.getEnd().getTime();
+
+        // TODO comparaison de temps
+        return this.title.equals(event.title) &&
+                this.description.equals(event.description);
     }
 }

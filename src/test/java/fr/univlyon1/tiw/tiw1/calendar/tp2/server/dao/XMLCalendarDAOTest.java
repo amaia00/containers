@@ -1,8 +1,8 @@
-package fr.univlyon1.tiw.tiw1.calendar.dao;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.dao;
 
-import fr.univlyon1.tiw.tiw1.calendar.modele.Calendar;
-import fr.univlyon1.tiw.tiw1.calendar.modele.Event;
-import fr.univlyon1.tiw.tiw1.calendar.modele.TestCalendarBuilder;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.TestCalendarBuilder;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.ParseException;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
@@ -41,7 +42,7 @@ public class XMLCalendarDAOTest {
     }
 
     @Before
-    public void setup() throws JAXBException, IOException {
+    public void setup() throws JAXBException, IOException, ParseException {
         calendar = TestCalendarBuilder.calendar1();
         xDao = new XMLCalendarDAO(new File("target/test-data"));
     }
@@ -76,7 +77,7 @@ public class XMLCalendarDAOTest {
     }
 
     @Test
-    public void testAddEvent() throws CalendarNotFoundException {
+    public void testAddEvent() throws CalendarNotFoundException, ParseException {
         xDao.saveCalendar(calendar);
         String id1 = calendar.getEvents().iterator().next().getId();
         LOG.debug("Event in calendar: {}", id1);

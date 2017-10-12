@@ -1,7 +1,7 @@
-package fr.univlyon1.tiw.tiw1.calendar.dao;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.dao;
 
-import fr.univlyon1.tiw.tiw1.calendar.modele.Calendar;
-import fr.univlyon1.tiw.tiw1.calendar.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.util.Optional;
 
 public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
 
@@ -56,13 +57,14 @@ public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
         if (toDelete.exists()) {
             boolean deleted = toDelete.delete();
             if (!deleted) {
-                LOG.error("Error: the file "+toDelete+" could not be deleted");
+                LOG.error("Error: the file ".concat(toDelete.getName()).concat(" could not be deleted"));
             }
         }
     }
 
     @Override
     public Calendar loadCalendar(String name) throws CalendarNotFoundException {
+        System.out.println("loadCalendar ".concat(name));
         File inputFile = fileFromCalendarName(name);
         if (inputFile.canRead()) {
             try (FileReader fr = new FileReader(inputFile)) {
@@ -85,8 +87,20 @@ public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
 
     @Override
     public void deleteEvent(Event event, Calendar calendar) {
-        calendar.getEvents().remove(event);
+        Event evn = findEvent(event, calendar);
+        calendar.getEvents().remove(evn);
         saveCalendar(calendar);
+    }
+
+    @Override
+    public Event findEvent(Event event, Calendar calendar) {
+        Event evn = null;
+
+        Optional<Event> eventOptional = calendar.getEvents().stream().filter(e -> e.equals(event)).findFirst();
+        if (eventOptional.isPresent())
+            evn = eventOptional.get();
+
+        return evn;
     }
 
     @Override

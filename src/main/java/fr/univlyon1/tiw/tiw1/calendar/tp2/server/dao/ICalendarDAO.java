@@ -1,7 +1,7 @@
-package fr.univlyon1.tiw.tiw1.calendar.dao;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.dao;
 
-import fr.univlyon1.tiw.tiw1.calendar.modele.Calendar;
-import fr.univlyon1.tiw.tiw1.calendar.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Event;
 
 public interface ICalendarDAO {
 
@@ -38,4 +38,7 @@ public interface ICalendarDAO {
      * @param calendar le calendrier dans lequel se trouve l'evenement.
      */
     void deleteEvent(Event event, Calendar calendar);
+
+
+    Event findEvent(Event event, Calendar calendar);
 }

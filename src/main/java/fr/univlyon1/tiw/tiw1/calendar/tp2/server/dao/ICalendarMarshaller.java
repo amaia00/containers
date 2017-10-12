@@ -1,6 +1,6 @@
-package fr.univlyon1.tiw.tiw1.calendar.dao;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.dao;
 
-import fr.univlyon1.tiw.tiw1.calendar.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Calendar;
 
 import java.io.*;
 

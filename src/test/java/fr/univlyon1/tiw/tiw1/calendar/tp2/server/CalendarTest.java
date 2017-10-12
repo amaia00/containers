@@ -1,6 +1,10 @@
-package fr.univlyon1.tiw.tiw1.calendar.modele;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
 
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Event;
 import org.junit.Test;
+
+import java.text.ParseException;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -8,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 public class CalendarTest {
 
     @Test
-    public void testAddedToCollection() {
+    public void testAddedToCollection() throws ParseException {
         Calendar calendar = TestCalendarBuilder.buildCalendar("tiw");
         Event evt = TestCalendarBuilder.addCMJava(calendar);
         assertNotNull(evt);
@@ -16,11 +20,12 @@ public class CalendarTest {
     }
 
     @Test
-    public void testSynchroDAO() {
+    public void testSynchroDAO() throws ParseException {
         Calendar calendar = TestCalendarBuilder.buildCalendar("test-synchro");
         Event evt = TestCalendarBuilder.addCMJava(calendar);
         calendar.getEvents().remove(evt);
         calendar.synchronizeEvents();
+
         assertTrue(calendar.getEvents().contains(evt));
     }
 }
