@@ -3,6 +3,7 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.client;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.EventNotFoundException;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +15,8 @@ public class CalendarUI {
     private static final Logger LOG = LoggerFactory.getLogger(CalendarUI.class);
     private Calendar calendar;
 
-    public CalendarUI(Calendar serverCalendar) {
-        calendar = serverCalendar;
+    public CalendarUI(Server serverCalendar) {
+        calendar = serverCalendar.getCalendar();
     }
 
     public void start() {

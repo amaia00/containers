@@ -15,7 +15,8 @@ public class Main {
         Config config = new Config("My calendar", "EEE MMM dd kk:mm:ss zzz yyyy", "/tmp");
         Server server = new Server(config);
 
-        CalendarUI calendarUI = new CalendarUI(server.getCalendar());
+        // TODO: Verify If we have to send the server  or the calendar --> send REFERENCE
+        CalendarUI calendarUI = new CalendarUI(server);
         calendarUI.start();
 
     }
