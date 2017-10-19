@@ -5,6 +5,7 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.CalendarNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.ICalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.XMLCalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 import org.picocontainer.Startable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +52,48 @@ public class Calendar implements Startable {
         return this.name;
     }
 
+
+    /**
+     *
+     * @param command
+     * @param eventDTO
+     * @return
+     * @throws ObjectNotFoundException
+     */
+    public Object process(Command command, EventDTO eventDTO) throws ObjectNotFoundException {
+        Object reponse = null;
+
+        switch (command) {
+            case INIT_EVENT:
+                synchronizeEvents();
+                break;
+            case ADD_EVENT:
+                reponse = addEvent(eventDTO);
+                break;
+            case REMOVE_EVENT:
+                removeEvent(eventDTO);
+                break;
+            case LIST_EVENTS:
+                reponse = getInfos();
+                break;
+            case FIND_EVENT:
+                reponse = findEvent(eventDTO);
+                break;
+            default:
+                break;
+
+        }
+
+        return reponse;
+    }
+
+
     @XmlElement(name = "event")
     public Collection<Event> getEvents() {
         return events;
     }
 
-    public Event addEvent(EventDTO eventDTO) {
+    private Event addEvent(EventDTO eventDTO) {
 
         Event event = new Event(eventDTO, this.parseDate(eventDTO.getStart()),
                 this.parseDate(eventDTO.getEnd()));
@@ -72,7 +109,7 @@ public class Calendar implements Startable {
         return event;
     }
 
-    public Event findEvent(EventDTO eventDTO) throws EventNotFoundException {
+    private Event findEvent(EventDTO eventDTO) throws ObjectNotFoundException {
 
         for (Event temp : events) {
             Event event = new Event(eventDTO, this.parseDate(eventDTO.getStart()),
@@ -82,11 +119,11 @@ public class Calendar implements Startable {
                 return temp;
         }
 
-        throw new EventNotFoundException("L'evenement ".concat(eventDTO.getTitle())
+        throw new ObjectNotFoundException("L'evenement ".concat(eventDTO.getTitle())
                 .concat(" ne se trouve pas dans la liste d'evenements"));
     }
 
-    public void removeEvent(EventDTO eventDTO) throws EventNotFoundException {
+    private void removeEvent(EventDTO eventDTO) throws ObjectNotFoundException {
 
         Event event = new Event(eventDTO, this.parseDate(eventDTO.getStart()),
                 this.parseDate(eventDTO.getEnd()));
@@ -111,7 +148,7 @@ public class Calendar implements Startable {
     /**
      *
      */
-    public void synchronizeEvents() {
+    private void synchronizeEvents() {
         try {
             Calendar tmp = dao.loadCalendar(this.name);
             this.setEvents(tmp.getEvents());
@@ -143,7 +180,7 @@ public class Calendar implements Startable {
      *
      * @return une string formattée contentant toutes les infos des événements de l'calendar
      */
-    public String getInfos() {
+    private String getInfos() {
         StringBuilder info = new StringBuilder();
         for (Event event : this.events) {
             EventDTO eventDTO = new EventDTO(event.getTitle(), event.getDescription(), this.formatDate(event.getStart()),

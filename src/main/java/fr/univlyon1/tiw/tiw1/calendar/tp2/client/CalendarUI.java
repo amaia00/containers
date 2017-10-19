@@ -1,8 +1,8 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.client;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.EventNotFoundException;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +13,10 @@ import java.io.InputStreamReader;
 public class CalendarUI {
 
     private static final Logger LOG = LoggerFactory.getLogger(CalendarUI.class);
-    private Calendar calendar;
+    private Server calendarServerImpl;
 
-    public CalendarUI(Server serverCalendar) {
-        calendar = serverCalendar.getCalendar();
+    public CalendarUI(Server serverImpl) {
+        this.calendarServerImpl = serverImpl;
     }
 
     public void start() {
@@ -26,11 +26,15 @@ public class CalendarUI {
 
             if (option == 5)
                 return;
-            this.processOption(option);
+            try {
+                this.processOption(option);
+            } catch (ObjectNotFoundException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
-    private void processOption(int option) {
+    private void processOption(int option) throws ObjectNotFoundException {
         String title;
         String description;
         String start;
@@ -50,11 +54,11 @@ public class CalendarUI {
 
                 EventDTO eventDTO = new EventDTO(title, description, start, end, null);
 
-                if (option == 1) calendar.addEvent(eventDTO);
+                if (option == 1) calendarServerImpl.processRequest(Command.ADD_EVENT, eventDTO);
                 else {
                     try {
-                        calendar.removeEvent(eventDTO);
-                    } catch (EventNotFoundException e) {
+                        calendarServerImpl.processRequest(Command.REMOVE_EVENT, eventDTO);
+                    } catch (ObjectNotFoundException e) {
                         LOG.warn(e.getMessage());
                     }
                 }
@@ -62,11 +66,11 @@ public class CalendarUI {
 
             case 3:
                 System.out.println("Events in calendar:\n");
-                System.out.println(calendar.getInfos());
+                System.out.println(calendarServerImpl.processRequest(Command.LIST_EVENTS));
                 break;
 
             case 4:
-                calendar.synchronizeEvents();
+                calendarServerImpl.processRequest(Command.INIT_EVENT);
                 System.out.println("Event list synchronized with DAO.\n\n");
                 break;
 

@@ -1,6 +1,7 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.TestCalendarBuilder;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
@@ -29,7 +30,7 @@ public class JSONCalendarDAOTest {
     }
 
     @Before
-    public void setup() throws ParseException {
+    public void setup() throws ParseException, ObjectNotFoundException {
         calendar1 = TestCalendarBuilder.calendar1();
         jDao = new JSONCalendarDAO(new File("target/test-data")); // FIXME: adapter éventuellement la construction du DAO
     }

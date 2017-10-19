@@ -2,6 +2,7 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.TestCalendarBuilder;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -42,7 +43,7 @@ public class XMLCalendarDAOTest {
     }
 
     @Before
-    public void setup() throws JAXBException, IOException, ParseException {
+    public void setup() throws JAXBException, IOException, ParseException, ObjectNotFoundException {
         calendar = TestCalendarBuilder.calendar1();
         xDao = new XMLCalendarDAO(new File("target/test-data"));
     }
@@ -77,7 +78,7 @@ public class XMLCalendarDAOTest {
     }
 
     @Test
-    public void testAddEvent() throws CalendarNotFoundException, ParseException {
+    public void testAddEvent() throws CalendarNotFoundException, ParseException, ObjectNotFoundException {
         xDao.saveCalendar(calendar);
         String id1 = calendar.getEvents().iterator().next().getId();
         LOG.debug("Event in calendar: {}", id1);

@@ -4,6 +4,8 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 
 import java.text.ParseException;
 import java.util.GregorianCalendar;
@@ -19,14 +21,14 @@ public class TestCalendarBuilder {
         return calendar;
     }
 
-    public static Calendar calendar1() throws ParseException {
+    public static Calendar calendar1() throws ParseException, ObjectNotFoundException {
         Calendar calendar = buildCalendar("My calendar");
         addCMJava(calendar);
         return calendar;
     }
 
 
-    public static Event addCMJava(Calendar calendar) throws ParseException {
+    public static Event addCMJava(Calendar calendar) throws ParseException, ObjectNotFoundException {
         java.util.Calendar d = GregorianCalendar.getInstance();
         d.set(2017, 10, 11, 8, 0);
         java.util.Calendar f = (java.util.Calendar) d.clone();
@@ -36,10 +38,10 @@ public class TestCalendarBuilder {
         EventDTO event = new EventDTO("CM1 TIW1", "Introduction", d.getTime().toString(),
                 f.getTime().toString(), null);
 
-        return calendar.addEvent(event);
+        return (Event) calendar.process(Command.ADD_EVENT, event);
     }
 
-    public static Event ajouteTPJava(Calendar calendar) throws ParseException {
+    public static Event ajouteTPJava(Calendar calendar) throws ParseException, ObjectNotFoundException {
         java.util.Calendar d = GregorianCalendar.getInstance();
         d.set(2017, java.util.Calendar.NOVEMBER, 11, 9, 45);
         java.util.Calendar f = (java.util.Calendar) d.clone();
@@ -49,6 +51,6 @@ public class TestCalendarBuilder {
         EventDTO event = new EventDTO("TP1 TIW1", "Révision Java", d.getTime().toString(),
                 f.getTime().toString(), null);
 
-        return calendar.addEvent(event);
+        return (Event) calendar.process(Command.ADD_EVENT, event);
     }
 }
