@@ -1,4 +1,4 @@
-package fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele;
 
 /**
  * @author Amaia Nazábal

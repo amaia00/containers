@@ -1,4 +1,4 @@
-package fr.univlyon1.tiw.tiw1.calendar.tp2.server.dao;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao;
 
 public class CalendarNotFoundException extends Exception {
     

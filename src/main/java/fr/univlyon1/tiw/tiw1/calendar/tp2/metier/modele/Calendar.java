@@ -1,10 +1,11 @@
-package fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.dao.CalendarNotFoundException;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.dao.ICalendarDAO;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.dao.XMLCalendarDAO;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.dto.EventDTO;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.CalendarNotFoundException;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.ICalendarDAO;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.XMLCalendarDAO;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
+import org.picocontainer.Startable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ import java.util.*;
 
 @XmlRootElement(name = "calendar")
 @XmlType(propOrder = {"name", "events"})
-public class Calendar {
+public class Calendar implements Startable {
     private static final Logger LOG = LoggerFactory.getLogger(Calendar.class);
 
     @XmlElement
@@ -90,7 +91,6 @@ public class Calendar {
         Event event = new Event(eventDTO, this.parseDate(eventDTO.getStart()),
                 this.parseDate(eventDTO.getEnd()));
 
-        // Suppression dans la liste
         for (Iterator<Event> i = events.iterator(); i.hasNext(); ) {
             Event temp = i.next();
             if (temp.equals(event)) {
@@ -106,10 +106,11 @@ public class Calendar {
                 return;
             }
         }
-
-
     }
 
+    /**
+     *
+     */
     public void synchronizeEvents() {
         try {
             Calendar tmp = dao.loadCalendar(this.name);
@@ -150,5 +151,16 @@ public class Calendar {
             info.append(eventDTO.toString());
         }
         return info.toString();
+    }
+
+    @Override
+    public void start() {
+        //Calendar démarré. Objet d'accès aux données : fr.univlyon1.tiw.tiw1.calendar.dao.XMLCalendarDAO@95c083
+        System.out.println("LIFE CYCLE: Calendar démarré. Objet d'accès aux données : ".concat(this.toString()));
+    }
+
+    @Override
+    public void stop() {
+        System.out.println("LIFE CYCLE: Calendar detenu. Objet d'accès aux données : ".concat(this.toString()));
     }
 }

@@ -1,8 +1,8 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.client;
 
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.dto.EventDTO;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.Calendar;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele.EventNotFoundException;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.EventNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class CalendarUI {
         }
     }
 
-    public void processOption(int option) {
+    private void processOption(int option) {
         String title;
         String description;
         String start;
@@ -75,7 +75,7 @@ public class CalendarUI {
 
     }
 
-    public static void showMenu() {
+    private static void showMenu() {
         System.out.println("Menu\n\n");
         System.out.println("1)\tAdd an event\n");
         System.out.println("2)\tDelete an event\n");
@@ -86,7 +86,7 @@ public class CalendarUI {
 
     //	 ---------------------------------------------
     //   Code trouve a : http://www.wellho.net/resources/ex.php4?item=j703/WellHouseInput.java
-    public static String readLine() {
+    private static String readLine() {
         BufferedReader standard = new BufferedReader(new InputStreamReader(System.in));
         try {
             return standard.readLine();

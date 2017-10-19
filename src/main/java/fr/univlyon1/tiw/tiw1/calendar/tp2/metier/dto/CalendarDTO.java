@@ -1,4 +1,4 @@
-package fr.univlyon1.tiw.tiw1.calendar.tp2.server.dto;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;

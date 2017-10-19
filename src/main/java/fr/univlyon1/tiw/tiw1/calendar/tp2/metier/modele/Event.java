@@ -1,6 +1,6 @@
-package fr.univlyon1.tiw.tiw1.calendar.tp2.server.modele;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele;
 
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.dto.EventDTO;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
