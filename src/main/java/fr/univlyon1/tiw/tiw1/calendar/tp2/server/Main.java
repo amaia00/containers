@@ -2,6 +2,11 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.client.CalendarUI;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.AnnuaireImpl;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.frame.ServerImpl;
+
+import java.io.InvalidClassException;
 
 /**
  * @author Amaia Nazábal
@@ -10,12 +15,14 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidClassException {
 
         Config config = new Config("My calendar", "EEE MMM dd kk:mm:ss zzz yyyy", "/tmp");
-        Server server = new ServerImpl(config);
 
-        CalendarUI calendarUI = new CalendarUI(server);
+        Annuaire annuaire = new AnnuaireImpl();
+        new ServerImpl(config, annuaire);
+
+        CalendarUI calendarUI = new CalendarUI(annuaire);
         calendarUI.start();
 
     }

@@ -4,6 +4,8 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.*;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContext;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.ContextVariable;
 
 import java.text.ParseException;
 import java.util.GregorianCalendar;
@@ -22,20 +24,22 @@ public class TestCalendarBuilder {
 
     public static CalendarImpl getCalendarByAction(Command command,
                                                    CalendarContext context) {
-        switch (command) {
-            case ADD_EVENT:
-                return new CalendarAdd(config, context);
-            case LIST_EVENTS:
-                return new CalendarList(config, context);
-            case FIND_EVENT:
-                return new CalendarFind(config, context);
-            case REMOVE_EVENT:
-                return new CalendarRemove(config, context);
-            case SYNC_EVENTS:
-                return new CalendarSync(config, context);
-            default:
-                throw new RuntimeException("Not calendar founded");
-        }
+        // FIXME: Annuaire instead of CalendarContext
+//        switch (command) {
+//            case ADD_EVENT:
+//                return new CalendarAdd(config, context);
+//            case LIST_EVENTS:
+//                return new CalendarList(config, context);
+//            case FIND_EVENT:
+//                return new CalendarFind(config, context);
+//            case REMOVE_EVENT:
+//                return new CalendarRemove(config, context);
+//            case SYNC_EVENTS:
+//                return new CalendarSync(config, context);
+//            default:
+//                throw new RuntimeException("Not calendar founded");
+//        }
+        return null;
     }
 
     public static Calendar calendar1(CalendarContext context) throws ParseException, ObjectNotFoundException {

@@ -2,7 +2,7 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +16,8 @@ import java.util.UUID;
 public class CalendarAdd extends CalendarImpl {
     private static final Logger LOG = LoggerFactory.getLogger(CalendarAdd.class);
 
-    public CalendarAdd(Config config, CalendarContext context) {
-        super(config, context);
+    public CalendarAdd(Config config, Annuaire annuaire) {
+        super(config, annuaire);
     }
 
     @Override

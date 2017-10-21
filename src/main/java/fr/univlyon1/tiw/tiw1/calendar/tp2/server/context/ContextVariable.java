@@ -1,4 +1,4 @@
-package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.context;
 
 /**
  * @author Amaia Nazábal
@@ -7,7 +7,9 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
  */
 public enum ContextVariable {
     ENTITY("CalendarEntity"),
-    DAO("CalendarDAO");
+    DAO("CalendarDAO"),
+    CONFIG("Config"),
+    REQUEST("Request");
 
     private String variable;
 

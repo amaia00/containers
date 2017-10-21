@@ -2,7 +2,7 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 
 /**
  * @author Amaia Nazábal
@@ -11,8 +11,8 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
  */
 public class CalendarFind extends CalendarImpl {
 
-    public CalendarFind(Config config, CalendarContext context) {
-        super(config, context);
+    public CalendarFind(Config config, Annuaire annuaire) {
+        super(config, annuaire);
     }
 
     @Override

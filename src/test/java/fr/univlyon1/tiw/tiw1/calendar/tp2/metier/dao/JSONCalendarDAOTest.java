@@ -2,9 +2,9 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContextImpl;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.ContextVariable;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContext;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContextImpl;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.ContextVariable;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.TestCalendarBuilder;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;

@@ -3,20 +3,25 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.client;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.Server;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.RegistryVariable;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.ContextVariable;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.frame.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.InvalidClassException;
 
 public class CalendarUI {
 
     private static final Logger LOG = LoggerFactory.getLogger(CalendarUI.class);
     private Server calendarServerImpl;
 
-    public CalendarUI(Server serverImpl) {
-        this.calendarServerImpl = serverImpl;
+    public CalendarUI(Annuaire annuaire) throws InvalidClassException {
+        this.calendarServerImpl = (Server) annuaire.getRegistry(RegistryVariable.CONTEXT_ROOT)
+                .getContextVariable(ContextVariable.REQUEST);
     }
 
     public void start() {

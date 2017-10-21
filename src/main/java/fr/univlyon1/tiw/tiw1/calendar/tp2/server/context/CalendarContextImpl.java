@@ -1,4 +1,4 @@
-package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.context;
 
 import java.io.InvalidClassException;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class CalendarContextImpl implements CalendarContext{
         String className = elements[2].getClassName();
 
         // FIXME: remove naivemethodaccessor (?) for test purposes
-        if (className.matches("(.*).Calendar(Add|Remove|List|Find|Sync)") || className.equals("sun.reflect.NativeMethodAccessorImpl"))
+        if (className.matches("(.*).Calendar(Add|Remove|List|Find|Sync)") || className.contains("Main") || className.equals("sun.reflect.NativeMethodAccessorImpl"))
             return contextVariables.get(variable.getVariable());
 
         throw new InvalidClassException("The caller class should be a calendar. Founded class: ".concat(className) );

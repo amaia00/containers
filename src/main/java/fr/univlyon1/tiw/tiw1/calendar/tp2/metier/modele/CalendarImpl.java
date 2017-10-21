@@ -4,8 +4,9 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.ICalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.ContextVariable;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.RegistryVariable;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.ContextVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +24,14 @@ public abstract class CalendarImpl implements Calendar {
     private Config config;
 
 
-    public CalendarImpl(Config config, CalendarContext context) {
+    public CalendarImpl(Config config, Annuaire annuaire) {
         this.config = config;
 
         try {
-            this.entity = (CalendarEntity) context.getContextVariable(ContextVariable.ENTITY);
-            this.dao = (ICalendarDAO) context.getContextVariable(ContextVariable.DAO);
+            this.entity = (CalendarEntity) annuaire.getRegistry(RegistryVariable.CONTEXT_BUSINESS)
+                    .getContextVariable(ContextVariable.ENTITY);
+            this.dao = (ICalendarDAO) annuaire.getRegistry(RegistryVariable.CONTEXT_PERSISTENCE)
+                    .getContextVariable(ContextVariable.DAO);
         } catch (InvalidClassException e) {
             LOG.error(e.getMessage());
         }

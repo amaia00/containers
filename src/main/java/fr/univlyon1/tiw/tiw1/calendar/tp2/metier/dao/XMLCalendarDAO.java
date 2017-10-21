@@ -41,16 +41,10 @@ public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
         return new File(directory, calendarName + ".xml");
     }
 
+    // FIXME: The first time than we add a new event the method save override all the events in the existent file.
     @Override
     public void saveCalendar(CalendarEntity calendarImpl) {
         File outputFile = fileFromCalendarName(calendarImpl.getName());
-//        JAXBElement<CalendarEntity> je2 = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema", "calendar"), CalendarEntity.class, calendarImpl);
-//        try {
-//            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//            marshaller.marshal(je2, outputFile);
-//        } catch (JAXBException e) {
-//            LOG.error(e.getMessage());
-//        }
         marshall(calendarImpl, outputFile);
 
     }

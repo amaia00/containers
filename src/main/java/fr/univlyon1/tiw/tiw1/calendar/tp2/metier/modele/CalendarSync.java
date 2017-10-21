@@ -3,7 +3,7 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.CalendarNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 public class CalendarSync extends CalendarImpl{
     private static final Logger LOG = LoggerFactory.getLogger(CalendarRemove.class);
 
-    public CalendarSync(Config config, CalendarContext context) {
-        super(config, context);
+    public CalendarSync(Config config, Annuaire annuaire) {
+        super(config, annuaire);
     }
 
     @Override

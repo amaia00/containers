@@ -1,10 +1,15 @@
-package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.frame;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.XMLCalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.*;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.RegistryVariable;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContext;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContextImpl;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.ContextVariable;
 import org.picocontainer.Characteristics;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
@@ -36,7 +41,7 @@ public class ServerImpl implements Server {
      *               - The date format
      *               - The calendars' name
      */
-    public ServerImpl(Config config) {
+    public ServerImpl(Config config, Annuaire annuaire) {
 
         MutablePicoContainer configContainer = new DefaultPicoContainer().as(Characteristics.CACHE);
         configContainer.addComponent(SimpleDateFormat.class);
@@ -50,16 +55,37 @@ public class ServerImpl implements Server {
         MutablePicoContainer store = new DefaultPicoContainer(xmlContainer).as(Characteristics.CACHE);
         store.addComponent(new CalendarEntity(config.getProperty(Config.CALENDAR_NAME)));
 
-        MutablePicoContainer context = new DefaultPicoContainer().as(Characteristics.CACHE);
-        context.addComponent(CalendarContextImpl.class);
+        /* ***  Creation of context for every layer (root, application, business and persistence) *** */
+        MutablePicoContainer contextRoot = new DefaultPicoContainer(configContainer).as(Characteristics.CACHE);
+        contextRoot.addComponent(CalendarContextImpl.class);
+        contextRoot.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.CONFIG, config);
+        contextRoot.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.REQUEST, this);
 
-        context.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.DAO,
-                xmlContainer.getComponent(XMLCalendarDAO.class));
-        context.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.ENTITY,
+        MutablePicoContainer contextApp = new DefaultPicoContainer(configContainer).as(Characteristics.CACHE);
+        contextApp.addComponent(CalendarContextImpl.class);
+        contextApp.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.CONFIG, config);
+
+        MutablePicoContainer contextBusiness = new DefaultPicoContainer(store).as(Characteristics.CACHE);
+        contextBusiness.addComponent(CalendarContextImpl.class);
+        contextBusiness.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.ENTITY,
                 store.getComponent(CalendarEntity.class));
 
-        MutablePicoContainer serverContainer = new DefaultPicoContainer(context).as(Characteristics.CACHE);
+        MutablePicoContainer contextPersistence = new DefaultPicoContainer(xmlContainer).as(Characteristics.CACHE);
+        contextPersistence.addComponent(CalendarContextImpl.class);
+        contextPersistence.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.DAO,
+                xmlContainer.getComponent(XMLCalendarDAO.class));
+
+
+        /* *** Setting of all the context on the registry *** */
+        annuaire.setRegistry(RegistryVariable.CONTEXT_ROOT, contextRoot.getComponent(CalendarContextImpl.class));
+        annuaire.setRegistry(RegistryVariable.CONTEXT_APPLICATION, contextApp.getComponent(CalendarContextImpl.class));
+        annuaire.setRegistry(RegistryVariable.CONTEXT_BUSINESS, contextBusiness.getComponent(CalendarContextImpl.class));
+        annuaire.setRegistry(RegistryVariable.CONTEXT_PERSISTENCE, contextPersistence.getComponent(CalendarContextImpl.class));
+
+
+        MutablePicoContainer serverContainer = new DefaultPicoContainer().as(Characteristics.CACHE);
         serverContainer.addComponent(config);
+        serverContainer.addComponent(annuaire);
         serverContainer.addComponent(CalendarAdd.class);
         serverContainer.addComponent(CalendarRemove.class);
         serverContainer.addComponent(CalendarList.class);

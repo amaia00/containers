@@ -1,4 +1,4 @@
-package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
+package fr.univlyon1.tiw.tiw1.calendar.tp2.server.context;
 
 import java.io.InvalidClassException;
 
