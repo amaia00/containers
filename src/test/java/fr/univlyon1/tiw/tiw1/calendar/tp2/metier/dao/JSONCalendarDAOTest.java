@@ -12,13 +12,16 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.text.ParseException;
 
 public class JSONCalendarDAOTest {
 
     private static final Schema schema = null;
-    private Calendar calendar1;
+    private Calendar calendarImpl1;
     private JSONCalendarDAO jDao;
 
     @BeforeClass
@@ -31,14 +34,14 @@ public class JSONCalendarDAOTest {
 
     @Before
     public void setup() throws ParseException, ObjectNotFoundException {
-        calendar1 = TestCalendarBuilder.calendar1();
+        calendarImpl1 = TestCalendarBuilder.calendar1();
         jDao = new JSONCalendarDAO(new File("target/test-data")); // FIXME: adapter éventuellement la construction du DAO
     }
 
     @Test @Ignore // FIXME: Supprimer @Ignore une fois la classe JSONAgendaDAO complétée
     public void testJSONSchema() throws IOException {
         StringWriter sw = new StringWriter();
-        jDao.marshall(calendar1,sw);
+        jDao.marshall(calendarImpl1.getEntity(),sw);
         String json = sw.toString();
         schema.validate(new JSONObject(json));
     }

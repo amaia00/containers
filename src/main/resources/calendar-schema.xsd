@@ -19,8 +19,9 @@
     <element name="calendar">
         <complexType>
             <sequence>
-                <element name="name" type="string"/>
+                <!-- FIXME: Order of elements -->
                 <element ref="calendar:event" minOccurs="0" maxOccurs="unbounded"/>
+                <element name="name" type="string"/>
             </sequence>
         </complexType>
     </element>

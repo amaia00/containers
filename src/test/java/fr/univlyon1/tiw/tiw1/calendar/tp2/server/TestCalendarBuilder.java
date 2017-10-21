@@ -2,9 +2,7 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.*;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 
 import java.text.ParseException;
@@ -15,20 +13,38 @@ public class TestCalendarBuilder {
     private static Config config;
 
 
-    public static Calendar buildCalendar(String nom) {
+    public static Calendar buildCalendar(String nom, Command command) {
         config = new Config(nom, "/tmp");
-        Calendar calendar = new Calendar(config);
-        return calendar;
+        CalendarEntity calendarEntity = new CalendarEntity(nom);
+        //CalendarImpl calendarImpl = new CalendarAdd(config, new CalendarEntity());
+        return getCalendarByAction(calendarEntity, command);
+    }
+
+    public static CalendarImpl getCalendarByAction(CalendarEntity calendarEntity, Command command) {
+        switch (command) {
+            case ADD_EVENT:
+                return new CalendarAdd(config, calendarEntity);
+            case LIST_EVENTS:
+                return new CalendarList(config, calendarEntity);
+            case FIND_EVENT:
+                return new CalendarFind(config, calendarEntity);
+            case REMOVE_EVENT:
+                return new CalendarRemove(config, calendarEntity);
+            case SYNC_EVENTS:
+                return new CalendarSync(config, calendarEntity);
+            default:
+                throw new RuntimeException("Not calendar founded");
+        }
     }
 
     public static Calendar calendar1() throws ParseException, ObjectNotFoundException {
-        Calendar calendar = buildCalendar("My calendar");
-        addCMJava(calendar);
-        return calendar;
+        Calendar calendarImpl = buildCalendar("My calendarImpl", Command.ADD_EVENT);
+        addCMJava(calendarImpl);
+        return calendarImpl;
     }
 
 
-    public static Event addCMJava(Calendar calendar) throws ParseException, ObjectNotFoundException {
+    public static Event addCMJava(Calendar calendarImpl) throws ParseException, ObjectNotFoundException {
         java.util.Calendar d = GregorianCalendar.getInstance();
         d.set(2017, 10, 11, 8, 0);
         java.util.Calendar f = (java.util.Calendar) d.clone();
@@ -38,10 +54,10 @@ public class TestCalendarBuilder {
         EventDTO event = new EventDTO("CM1 TIW1", "Introduction", d.getTime().toString(),
                 f.getTime().toString(), null);
 
-        return (Event) calendar.process(Command.ADD_EVENT, event);
+        return (Event) calendarImpl.process(Command.ADD_EVENT, event);
     }
 
-    public static Event ajouteTPJava(Calendar calendar) throws ParseException, ObjectNotFoundException {
+    public static Event addTPJava(Calendar calendarImpl) throws ParseException, ObjectNotFoundException {
         java.util.Calendar d = GregorianCalendar.getInstance();
         d.set(2017, java.util.Calendar.NOVEMBER, 11, 9, 45);
         java.util.Calendar f = (java.util.Calendar) d.clone();
@@ -51,6 +67,6 @@ public class TestCalendarBuilder {
         EventDTO event = new EventDTO("TP1 TIW1", "Révision Java", d.getTime().toString(),
                 f.getTime().toString(), null);
 
-        return (Event) calendar.process(Command.ADD_EVENT, event);
+        return (Event) calendarImpl.process(Command.ADD_EVENT, event);
     }
 }

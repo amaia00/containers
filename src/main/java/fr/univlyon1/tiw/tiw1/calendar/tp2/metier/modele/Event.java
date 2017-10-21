@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Date;
 
-@XmlType(propOrder = {"title", "start", "end", "description"})
+@XmlType(propOrder = {"id", "title", "start", "end", "description"})
 public class Event {
     private String title;
     private String description;

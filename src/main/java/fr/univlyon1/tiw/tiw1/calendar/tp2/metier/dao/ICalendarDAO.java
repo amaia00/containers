@@ -1,7 +1,12 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao;
 
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarEntity;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
+import java.io.File;
+import java.io.IOException;
 
 public interface ICalendarDAO {
 
@@ -9,13 +14,13 @@ public interface ICalendarDAO {
      * Sauve un calendrier dans le support de persitance.
      * @param calendar le calendrier à sauver.
      */
-    void saveCalendar(Calendar calendar);
+    void saveCalendar(CalendarEntity calendar);
 
     /**
      * Supprime un calendrier dans le support de persitance.
      * @param calendar le calendrier à sauver.
      */
-    void deleteCalendar(Calendar calendar);
+    void deleteCalendar(CalendarEntity calendar);
 
     /**
      * Charge un calendrier depuis le support de persistance.
@@ -23,22 +28,31 @@ public interface ICalendarDAO {
      * @return le calendrier chargé.
      * @throws CalendarNotFoundException si le calendrier n'a pas été trouvé
      */
-    Calendar loadCalendar(String name) throws CalendarNotFoundException;
+    CalendarEntity loadCalendar(String name) throws CalendarNotFoundException;
 
     /**
      * Sauve un evenement d'un calendrier dans le support de persitance.
      * @param event l'evenement à sauver.
      * @param calendar le calendrier dans lequel se trouve l'evenement.
      */
-    void saveEvent(Event event, Calendar calendar);
+    void saveEvent(Event event, CalendarEntity calendar);
 
     /**
      * Supprime un evenement d'un calendrier dans le support de persitance.
      * @param event l'evenement à sauver.
      * @param calendar le calendrier dans lequel se trouve l'evenement.
      */
-    void deleteEvent(Event event, Calendar calendar);
+    void deleteEvent(Event event, CalendarEntity calendar);
 
+    /**
+     *
+     * @param event
+     * @param calendar
+     * @return
+     */
+    Event findEvent(Event event, CalendarEntity calendar);
 
-    Event findEvent(Event event, Calendar calendar);
+    void marshall(CalendarEntity calendar, File output) throws IOException;
+
+    CalendarEntity unmarshall(StreamSource xml) throws JAXBException;
 }

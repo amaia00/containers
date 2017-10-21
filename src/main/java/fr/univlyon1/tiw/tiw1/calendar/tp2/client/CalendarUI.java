@@ -70,7 +70,7 @@ public class CalendarUI {
                 break;
 
             case 4:
-                calendarServerImpl.processRequest(Command.INIT_EVENT);
+                calendarServerImpl.processRequest(Command.SYNC_EVENTS);
                 System.out.println("Event list synchronized with DAO.\n\n");
                 break;
 

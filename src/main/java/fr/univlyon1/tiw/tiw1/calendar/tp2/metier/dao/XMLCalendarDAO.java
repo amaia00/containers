@@ -1,15 +1,16 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao;
 
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarEntity;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.*;
+import javax.xml.bind.*;
+import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Optional;
 
 public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
@@ -31,7 +32,7 @@ public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
                 throw new IOException("Error while creating directory " + directory);
             }
         }
-        this.jaxbC = JAXBContext.newInstance(Calendar.class, Event.class);
+        this.jaxbC = JAXBContext.newInstance(CalendarEntity.class);
         this.marshaller = this.jaxbC.createMarshaller();
         this.unmarshaller = this.jaxbC.createUnmarshaller();
     }
@@ -41,18 +42,21 @@ public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
     }
 
     @Override
-    public void saveCalendar(Calendar calendar) {
-        File outputFile = fileFromCalendarName(calendar.getName());
-        try (FileWriter fw = new FileWriter(outputFile)) {
-            marshall(calendar, fw);
-            fw.flush();
-        } catch (IOException e) {
-            LOG.error("Error while saving the calendar " + calendar.getName(), e);
-        }
+    public void saveCalendar(CalendarEntity calendarImpl) {
+        File outputFile = fileFromCalendarName(calendarImpl.getName());
+//        JAXBElement<CalendarEntity> je2 = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema", "calendar"), CalendarEntity.class, calendarImpl);
+//        try {
+//            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//            marshaller.marshal(je2, outputFile);
+//        } catch (JAXBException e) {
+//            LOG.error(e.getMessage());
+//        }
+        marshall(calendarImpl, outputFile);
+
     }
 
     @Override
-    public void deleteCalendar(Calendar calendar) {
+    public void deleteCalendar(CalendarEntity calendar) {
         File toDelete = fileFromCalendarName(calendar.getName());
         if (toDelete.exists()) {
             boolean deleted = toDelete.delete();
@@ -63,40 +67,35 @@ public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
     }
 
     @Override
-    public Calendar loadCalendar(String name) throws CalendarNotFoundException {
-        System.out.println("loadCalendar ".concat(name));
-        File inputFile = fileFromCalendarName(name);
-        if (inputFile.canRead()) {
-            try (FileReader fr = new FileReader(inputFile)) {
-                return unmarshall(fr);
-            } catch (IOException e) {
-                throw new CalendarNotFoundException(e);
-            }
-        } else {
-            throw new CalendarNotFoundException("Error: the file " + inputFile + " cannot be read");
+    public CalendarEntity loadCalendar(String name) throws CalendarNotFoundException {
+        StreamSource xml = new StreamSource(fileFromCalendarName(name));
+        try {
+            return unmarshall(xml);
+        } catch (JAXBException e) {
+            throw new CalendarNotFoundException(e);
         }
     }
 
     @Override
-    public void saveEvent(Event event, Calendar calendar) {
-        if (! calendar.getEvents().contains(event)) {
-            calendar.getEvents().add(event);
+    public void saveEvent(Event event, CalendarEntity calendar) {
+        if (!calendar.getEvent().contains(event)) {
+            calendar.getEvent().add(event);
         }
         saveCalendar(calendar);
     }
 
     @Override
-    public void deleteEvent(Event event, Calendar calendar) {
+    public void deleteEvent(Event event, CalendarEntity calendar) {
         Event evn = findEvent(event, calendar);
-        calendar.getEvents().remove(evn);
+        calendar.getEvent().remove(evn);
         saveCalendar(calendar);
     }
 
     @Override
-    public Event findEvent(Event event, Calendar calendar) {
+    public Event findEvent(Event event, CalendarEntity calendar) {
         Event evn = null;
 
-        Optional<Event> eventOptional = calendar.getEvents().stream().filter(e -> e.equals(event)).findFirst();
+        Optional<Event> eventOptional = calendar.getEvent().stream().filter(e -> e.equals(event)).findFirst();
         if (eventOptional.isPresent())
             evn = eventOptional.get();
 
@@ -104,20 +103,47 @@ public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
     }
 
     @Override
-    public void marshall(Calendar calendar, Writer output) throws IOException {
+    public void marshall(CalendarEntity calendar, File output) {
+//        try {
+//            marshaller.marshal(calendar, output);
+//        } catch (JAXBException e) {
+//            throw new IOException(e);
+//        }
+
+        JAXBElement<CalendarEntity> je2 = new JAXBElement<>(new QName("http://master-info.univ-lyon1.fr/TIW/TIW1/calendar",
+                "calendar"), CalendarEntity.class, calendar);
         try {
-            marshaller.marshal(calendar, output);
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.marshal(je2, output);
         } catch (JAXBException e) {
-            throw new IOException(e);
+            LOG.error(e.getMessage());
+        }
+    }
+
+    public void marshall(CalendarEntity calendar, Writer output) {
+//        try {
+//            marshaller.marshal(calendar, output);
+//        } catch (JAXBException e) {
+//            throw new IOException(e);
+//        }
+
+        JAXBElement<CalendarEntity> je2 = new JAXBElement<>(new QName("http://master-info.univ-lyon1.fr/TIW/TIW1/calendar",
+                "calendar"), CalendarEntity.class, calendar);
+        try {
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "");
+//            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, );
+            marshaller.marshal(je2, output);
+        } catch (JAXBException e) {
+            LOG.error(e.getMessage());
         }
     }
 
     @Override
-    public Calendar unmarshall(Reader input) throws IOException {
-        try {
-            return (Calendar) unmarshaller.unmarshal(input);
-        } catch (JAXBException e) {
-            throw new IOException(e);
-        }
+    public CalendarEntity unmarshall(StreamSource xml) throws JAXBException {
+
+        JAXBElement<CalendarEntity> je1 = unmarshaller.unmarshal(xml, CalendarEntity.class);
+        return je1.getValue();
+
     }
 }
