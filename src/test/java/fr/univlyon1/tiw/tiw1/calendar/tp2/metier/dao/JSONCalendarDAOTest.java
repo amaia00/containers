@@ -4,6 +4,7 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContextImpl;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.ContextVariable;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.TestCalendarBuilder;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
@@ -38,7 +39,9 @@ public class JSONCalendarDAOTest {
     // FIXME: adapter éventuellement la construction du DAO
     @Before
     public void setup() throws ParseException, ObjectNotFoundException {
-        context = new CalendarContextImpl(new JSONCalendarDAO(new File("target/test-data")));
+        context = new CalendarContextImpl();
+        context.setContextVariable(ContextVariable.DAO, new JSONCalendarDAO(new File("target/test-data")));
+
         calendarImpl1 = TestCalendarBuilder.calendar1(context);
         //jDao = new JSONCalendarDAO(new File("target/test-data")); // FIXME: adapter éventuellement la construction du DAO
     }
@@ -46,7 +49,7 @@ public class JSONCalendarDAOTest {
     @Test @Ignore // FIXME: Supprimer @Ignore une fois la classe JSONAgendaDAO complétée
     public void testJSONSchema() throws IOException {
         StringWriter sw = new StringWriter();
-        context.getCalendarDAO().marshall(calendarImpl1.getEntity(),sw);
+        ((ICalendarDAO)context.getContextVariable(ContextVariable.DAO)).marshall(calendarImpl1.getEntity(),sw);
         String json = sw.toString();
         schema.validate(new JSONObject(json));
     }

@@ -2,6 +2,7 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.XMLCalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarEntity;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
@@ -22,7 +23,9 @@ public class CalendarTest {
 
     @BeforeClass
     public static void setupClass() throws SAXException, JAXBException, IOException {
-        context = new CalendarContextImpl(new XMLCalendarDAO(new File("target/test-data")));
+        context = new CalendarContextImpl();
+        context.setContextVariable(ContextVariable.DAO, new XMLCalendarDAO(new File("target/test-data")));
+        context.setContextVariable(ContextVariable.ENTITY, new CalendarEntity());
     }
 
 
@@ -39,10 +42,10 @@ public class CalendarTest {
         Calendar calendarImpl = TestCalendarBuilder.buildCalendar("test-synchro", Command.ADD_EVENT, context);
         Event evt = TestCalendarBuilder.addCMJava(calendarImpl);
 
-        calendarImpl = TestCalendarBuilder.getCalendarByAction(calendarImpl.getEntity(), Command.REMOVE_EVENT, context);
+        calendarImpl = TestCalendarBuilder.getCalendarByAction(Command.REMOVE_EVENT, context);
         calendarImpl.getEvents().remove(evt);
 
-        calendarImpl = TestCalendarBuilder.getCalendarByAction(calendarImpl.getEntity(), Command.SYNC_EVENTS, context);
+        calendarImpl = TestCalendarBuilder.getCalendarByAction(Command.SYNC_EVENTS, context);
         calendarImpl.process(Command.SYNC_EVENTS, null);
 
         assertTrue(calendarImpl.getEvents().contains(evt));

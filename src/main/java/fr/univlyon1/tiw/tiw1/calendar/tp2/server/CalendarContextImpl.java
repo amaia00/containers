@@ -1,8 +1,8 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
 
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.ICalendarDAO;
-
 import java.io.InvalidClassException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Amaia Nazábal
@@ -10,14 +10,14 @@ import java.io.InvalidClassException;
  * @since 1.0 10/21/17.
  */
 public class CalendarContextImpl implements CalendarContext{
-    private ICalendarDAO calendarDAO;
+    private Map<String, Object> contextVariables;
 
-    public CalendarContextImpl(ICalendarDAO calendarDAO) {
-        this.calendarDAO = calendarDAO;
+    public CalendarContextImpl() {
+        this.contextVariables = new HashMap<>();
     }
 
     @Override
-    public ICalendarDAO getCalendarDAO() throws InvalidClassException {
+    public Object getContextVariable(ContextVariable variable) throws InvalidClassException {
         Throwable t = new Throwable();
         StackTraceElement[] elements = t.getStackTrace();
 
@@ -25,14 +25,13 @@ public class CalendarContextImpl implements CalendarContext{
 
         // FIXME: remove naivemethodaccessor (?) for test purposes
         if (className.matches("(.*).Calendar(Add|Remove|List|Find|Sync)") || className.equals("sun.reflect.NativeMethodAccessorImpl"))
-            return this.calendarDAO;
+            return contextVariables.get(variable.getVariable());
 
         throw new InvalidClassException("The caller class should be a calendar. Founded class: ".concat(className) );
     }
 
     @Override
-    public void setCalendarDAO(ICalendarDAO calendarDAO) {
-        this.calendarDAO = calendarDAO;
-
+    public void setContextVariable(ContextVariable variable, Object contextVariable) {
+        this.contextVariables.put(variable.getVariable(), contextVariable);
     }
 }

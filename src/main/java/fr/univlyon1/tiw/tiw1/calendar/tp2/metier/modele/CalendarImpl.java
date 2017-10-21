@@ -5,13 +5,13 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.ICalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.ContextVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InvalidClassException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
@@ -22,39 +22,19 @@ public abstract class CalendarImpl implements Calendar {
     protected ICalendarDAO dao;
     private Config config;
 
-//    public CalendarImpl() {
-//        this.entity.setEvent(new ArrayList<>());
-//    }
 
-//    public CalendarImpl(Config config) {
-//        this.config = config;
-//        this.entity = new CalendarEntity(config.getProperty(Config.CALENDAR_NAME));
-//
-//        try {
-//            this.dao = new XMLCalendarDAO(new File(config.getProperty(Config.DIRECTORY_NAME)));
-//        } catch (JAXBException | IOException e) {
-//            LOG.error(e.getMessage());
-//        }
-//
-//        this.entity.setEvent(new ArrayList<>());
-//    }
-
-    public CalendarImpl(Config config, CalendarEntity entity, CalendarContext context) {
+    public CalendarImpl(Config config, CalendarContext context) {
         this.config = config;
 
-        this.entity = entity;
-
-        if (entity.getEvent() == null)
-            this.entity.setEvent(new ArrayList<>());
-
-        if (entity.getName() == null)
-            this.entity.setName(config.getProperty(Config.CALENDAR_NAME));
-
         try {
-            this.dao = context.getCalendarDAO();
+            this.entity = (CalendarEntity) context.getContextVariable(ContextVariable.ENTITY);
+            this.dao = (ICalendarDAO) context.getContextVariable(ContextVariable.DAO);
         } catch (InvalidClassException e) {
             LOG.error(e.getMessage());
         }
+
+        if (entity.getName() == null)
+            this.entity.setName(config.getProperty(Config.CALENDAR_NAME));
     }
 
     @Override

@@ -11,8 +11,8 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
  */
 public class CalendarList extends CalendarImpl {
 
-    public CalendarList (Config config, CalendarEntity calendarEntity, CalendarContext context) {
-        super(config, calendarEntity, context);
+    public CalendarList (Config config, CalendarContext context) {
+        super(config, context);
     }
 
     @Override

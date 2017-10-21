@@ -1,7 +1,5 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.server;
 
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.ICalendarDAO;
-
 import java.io.InvalidClassException;
 
 /**
@@ -11,7 +9,7 @@ import java.io.InvalidClassException;
  */
 public interface CalendarContext {
 
-    ICalendarDAO getCalendarDAO() throws InvalidClassException;
+    Object getContextVariable(ContextVariable variable) throws InvalidClassException;
 
-    void setCalendarDAO(ICalendarDAO calendarDAO);
+    void setContextVariable(ContextVariable variable, Object contextVariable);
 }

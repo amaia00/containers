@@ -15,24 +15,24 @@ public class TestCalendarBuilder {
 
     public static Calendar buildCalendar(String nom, Command command, CalendarContext context) {
         config = new Config(nom, "/tmp");
-        CalendarEntity calendarEntity = new CalendarEntity(nom);
+        context.setContextVariable(ContextVariable.ENTITY, new CalendarEntity(nom));
         //CalendarImpl calendarImpl = new CalendarAdd(config, new CalendarEntity());
-        return getCalendarByAction(calendarEntity, command, context);
+        return getCalendarByAction(command, context);
     }
 
-    public static CalendarImpl getCalendarByAction(CalendarEntity calendarEntity, Command command,
+    public static CalendarImpl getCalendarByAction(Command command,
                                                    CalendarContext context) {
         switch (command) {
             case ADD_EVENT:
-                return new CalendarAdd(config, calendarEntity, context);
+                return new CalendarAdd(config, context);
             case LIST_EVENTS:
-                return new CalendarList(config, calendarEntity, context);
+                return new CalendarList(config, context);
             case FIND_EVENT:
-                return new CalendarFind(config, calendarEntity, context);
+                return new CalendarFind(config, context);
             case REMOVE_EVENT:
-                return new CalendarRemove(config, calendarEntity, context);
+                return new CalendarRemove(config, context);
             case SYNC_EVENTS:
-                return new CalendarSync(config, calendarEntity, context);
+                return new CalendarSync(config, context);
             default:
                 throw new RuntimeException("Not calendar founded");
         }

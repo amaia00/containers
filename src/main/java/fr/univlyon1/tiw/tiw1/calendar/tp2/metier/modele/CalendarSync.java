@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 public class CalendarSync extends CalendarImpl{
     private static final Logger LOG = LoggerFactory.getLogger(CalendarRemove.class);
 
-    public CalendarSync(Config config, CalendarEntity calendarEntity, CalendarContext context) {
-        super(config, calendarEntity, context);
+    public CalendarSync(Config config, CalendarContext context) {
+        super(config, context);
     }
 
     @Override

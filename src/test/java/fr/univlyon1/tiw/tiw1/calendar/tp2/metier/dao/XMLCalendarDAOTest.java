@@ -6,6 +6,7 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContextImpl;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.ContextVariable;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.TestCalendarBuilder;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -47,7 +48,9 @@ public class XMLCalendarDAOTest {
     public void setup() throws JAXBException, IOException, ParseException, ObjectNotFoundException {
 
 //        xDao = new XMLCalendarDAO(new File("target/test-data"));
-        CalendarContext context = new CalendarContextImpl(new XMLCalendarDAO(new File("target/test-data")));
+        CalendarContext context = new CalendarContextImpl();
+        context.setContextVariable(ContextVariable.DAO, new XMLCalendarDAO(new File("target/test-data")));
+
         this.context = context;
         calendarImpl = TestCalendarBuilder
                 .calendar1(context);
@@ -58,7 +61,7 @@ public class XMLCalendarDAOTest {
         Validator validator = schema.newValidator();
         StringWriter sw = new StringWriter();
 
-        context.getCalendarDAO().marshall(calendarImpl.getEntity(), sw);
+        ((ICalendarDAO)context.getContextVariable(ContextVariable.DAO)).marshall(calendarImpl.getEntity(), sw);
 
         StringReader sr = new StringReader(sw.toString());
         StreamSource ss = new StreamSource(sr);
@@ -72,8 +75,9 @@ public class XMLCalendarDAOTest {
 
     @Test
     public void testExportImport() throws CalendarNotFoundException, InvalidClassException {
-        context.getCalendarDAO().saveCalendar(calendarImpl.getEntity());
-        CalendarEntity calendarImpl2 = context.getCalendarDAO().loadCalendar(calendarImpl.getName());
+        ((ICalendarDAO)context.getContextVariable(ContextVariable.DAO)).saveCalendar(calendarImpl.getEntity());
+        CalendarEntity calendarImpl2 = ((ICalendarDAO)context.getContextVariable(ContextVariable.DAO))
+                .loadCalendar(calendarImpl.getName());
         assertEquals(calendarImpl.getName(), calendarImpl2.getName());
         for (Event evt : calendarImpl.getEvents()) {
             assertTrue("Event " + evt.getId() + " not found in serialized calendarImpl",
@@ -87,7 +91,7 @@ public class XMLCalendarDAOTest {
 
     @Test
     public void testAddEvent() throws CalendarNotFoundException, ParseException, ObjectNotFoundException, InvalidClassException {
-        context.getCalendarDAO().saveCalendar(calendarImpl.getEntity());
+        ((ICalendarDAO)context.getContextVariable(ContextVariable.DAO)).saveCalendar(calendarImpl.getEntity());
         String id1 = calendarImpl.getEvents().iterator().next().getId();
         LOG.debug("Event in calendarImpl: {}", id1);
         Event evt = TestCalendarBuilder.addTPJava(calendarImpl);
@@ -96,9 +100,10 @@ public class XMLCalendarDAOTest {
         String id2 = it2.next().getId();
         LOG.debug("New event in calendarImpl: {}", id2);
         assertNotEquals(id1, id2);
-        context.getCalendarDAO().saveEvent(evt, calendarImpl.getEntity());
+        ((ICalendarDAO)context.getContextVariable(ContextVariable.DAO)).saveEvent(evt, calendarImpl.getEntity());
 
-        CalendarEntity calendar2 = context.getCalendarDAO().loadCalendar(calendarImpl.getName());
+        CalendarEntity calendar2 = ((ICalendarDAO)context.getContextVariable(ContextVariable.DAO))
+                .loadCalendar(calendarImpl.getName());
         assertEquals(2, calendar2.getEvent().size());
         assertTrue("New event missing", calendar2.getEvent().contains(evt));
     }

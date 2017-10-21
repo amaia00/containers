@@ -39,7 +39,6 @@ public class ServerImpl implements Server {
     public ServerImpl(Config config) {
 
         MutablePicoContainer configContainer = new DefaultPicoContainer().as(Characteristics.CACHE);
-        configContainer.addComponent(config);
         configContainer.addComponent(SimpleDateFormat.class);
 
         // FIXME: Verify if I can change the dependency File for XMLCalendarDAO same for store container.
@@ -51,10 +50,16 @@ public class ServerImpl implements Server {
         MutablePicoContainer store = new DefaultPicoContainer(xmlContainer).as(Characteristics.CACHE);
         store.addComponent(new CalendarEntity(config.getProperty(Config.CALENDAR_NAME)));
 
-        MutablePicoContainer context = new DefaultPicoContainer(store).as(Characteristics.CACHE);
+        MutablePicoContainer context = new DefaultPicoContainer().as(Characteristics.CACHE);
         context.addComponent(CalendarContextImpl.class);
 
+        context.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.DAO,
+                xmlContainer.getComponent(XMLCalendarDAO.class));
+        context.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.ENTITY,
+                store.getComponent(CalendarEntity.class));
+
         MutablePicoContainer serverContainer = new DefaultPicoContainer(context).as(Characteristics.CACHE);
+        serverContainer.addComponent(config);
         serverContainer.addComponent(CalendarAdd.class);
         serverContainer.addComponent(CalendarRemove.class);
         serverContainer.addComponent(CalendarList.class);

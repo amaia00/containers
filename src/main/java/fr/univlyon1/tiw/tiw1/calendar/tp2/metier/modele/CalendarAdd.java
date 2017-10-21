@@ -16,8 +16,8 @@ import java.util.UUID;
 public class CalendarAdd extends CalendarImpl {
     private static final Logger LOG = LoggerFactory.getLogger(CalendarAdd.class);
 
-    public CalendarAdd(Config config, CalendarEntity calendarEntity, CalendarContext context) {
-        super(config, calendarEntity, context);
+    public CalendarAdd(Config config, CalendarContext context) {
+        super(config, context);
     }
 
     @Override
