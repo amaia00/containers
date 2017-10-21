@@ -20,10 +20,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.text.ParseException;
 import java.util.Iterator;
 
@@ -74,7 +71,7 @@ public class XMLCalendarDAOTest {
     }
 
     @Test
-    public void testExportImport() throws CalendarNotFoundException {
+    public void testExportImport() throws CalendarNotFoundException, InvalidClassException {
         context.getCalendarDAO().saveCalendar(calendarImpl.getEntity());
         CalendarEntity calendarImpl2 = context.getCalendarDAO().loadCalendar(calendarImpl.getName());
         assertEquals(calendarImpl.getName(), calendarImpl2.getName());
@@ -89,7 +86,7 @@ public class XMLCalendarDAOTest {
     }
 
     @Test
-    public void testAddEvent() throws CalendarNotFoundException, ParseException, ObjectNotFoundException {
+    public void testAddEvent() throws CalendarNotFoundException, ParseException, ObjectNotFoundException, InvalidClassException {
         context.getCalendarDAO().saveCalendar(calendarImpl.getEntity());
         String id1 = calendarImpl.getEvents().iterator().next().getId();
         LOG.debug("Event in calendarImpl: {}", id1);

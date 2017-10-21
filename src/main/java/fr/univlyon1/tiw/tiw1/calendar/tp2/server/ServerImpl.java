@@ -48,13 +48,13 @@ public class ServerImpl implements Server {
         xmlContainer.addComponent(new File(config.getProperty(Config.DIRECTORY_NAME)));
         xmlContainer.addComponent(XMLCalendarDAO.class);
 
-        MutablePicoContainer context = new DefaultPicoContainer(xmlContainer).as(Characteristics.CACHE);
-        context.addComponent(CalendarContextImpl.class);
-
         MutablePicoContainer store = new DefaultPicoContainer(xmlContainer).as(Characteristics.CACHE);
         store.addComponent(new CalendarEntity(config.getProperty(Config.CALENDAR_NAME)));
 
-        MutablePicoContainer serverContainer = new DefaultPicoContainer(store).as(Characteristics.CACHE);
+        MutablePicoContainer context = new DefaultPicoContainer(store).as(Characteristics.CACHE);
+        context.addComponent(CalendarContextImpl.class);
+
+        MutablePicoContainer serverContainer = new DefaultPicoContainer(context).as(Characteristics.CACHE);
         serverContainer.addComponent(CalendarAdd.class);
         serverContainer.addComponent(CalendarRemove.class);
         serverContainer.addComponent(CalendarList.class);

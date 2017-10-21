@@ -8,6 +8,7 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InvalidClassException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,11 +50,11 @@ public abstract class CalendarImpl implements Calendar {
         if (entity.getName() == null)
             this.entity.setName(config.getProperty(Config.CALENDAR_NAME));
 
-//        try {
+        try {
             this.dao = context.getCalendarDAO();
-//        } catch (JAXBException | IOException e) {
-//            LOG.error(e.getMessage());
-//        }
+        } catch (InvalidClassException e) {
+            LOG.error(e.getMessage());
+        }
     }
 
     @Override
