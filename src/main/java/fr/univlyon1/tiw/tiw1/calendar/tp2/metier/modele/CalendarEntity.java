@@ -15,13 +15,13 @@ public class CalendarEntity {
 
     private Collection<Event> event;
 
-
     public CalendarEntity() {
         this.event = new ArrayList<>();
     }
 
     public CalendarEntity(String name) {
         this.name = name;
+        this.event = new ArrayList<>();
     }
 
     public String getName() {

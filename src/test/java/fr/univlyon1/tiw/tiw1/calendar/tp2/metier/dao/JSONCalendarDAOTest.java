@@ -2,6 +2,8 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContextImpl;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.TestCalendarBuilder;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
@@ -22,26 +24,29 @@ public class JSONCalendarDAOTest {
 
     private static final Schema schema = null;
     private Calendar calendarImpl1;
-    private JSONCalendarDAO jDao;
+    private static CalendarContext context;
 
     @BeforeClass
     public static void setupBeforeClass() throws IOException {
         try (InputStream inputStream = JSONCalendarDAO.class.getResourceAsStream("/calendar-schema.json")) {
             JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
             Schema schema = SchemaLoader.load(rawSchema);
+
         }
     }
 
+    // FIXME: adapter éventuellement la construction du DAO
     @Before
     public void setup() throws ParseException, ObjectNotFoundException {
-        calendarImpl1 = TestCalendarBuilder.calendar1();
-        jDao = new JSONCalendarDAO(new File("target/test-data")); // FIXME: adapter éventuellement la construction du DAO
+        context = new CalendarContextImpl(new JSONCalendarDAO(new File("target/test-data")));
+        calendarImpl1 = TestCalendarBuilder.calendar1(context);
+        //jDao = new JSONCalendarDAO(new File("target/test-data")); // FIXME: adapter éventuellement la construction du DAO
     }
 
     @Test @Ignore // FIXME: Supprimer @Ignore une fois la classe JSONAgendaDAO complétée
     public void testJSONSchema() throws IOException {
         StringWriter sw = new StringWriter();
-        jDao.marshall(calendarImpl1.getEntity(),sw);
+        context.getCalendarDAO().marshall(calendarImpl1.getEntity(),sw);
         String json = sw.toString();
         schema.validate(new JSONObject(json));
     }

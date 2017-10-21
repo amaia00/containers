@@ -2,6 +2,7 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
 
 /**
  * @author Amaia Nazábal
@@ -10,8 +11,8 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
  */
 public class CalendarList extends CalendarImpl {
 
-    public CalendarList (Config config, CalendarEntity calendarEntity) {
-        super(config, calendarEntity);
+    public CalendarList (Config config, CalendarEntity calendarEntity, CalendarContext context) {
+        super(config, calendarEntity, context);
     }
 
     @Override

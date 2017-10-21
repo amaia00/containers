@@ -11,6 +11,7 @@ import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
@@ -27,6 +28,7 @@ public class ServerImpl implements Server {
     private static final String PACKAGE_NAME = CalendarImpl.class.getPackage().getName();
     private static final Logger LOG = LoggerFactory.getLogger(ServerImpl.class);
     private MutablePicoContainer container = new DefaultPicoContainer();
+    private CalendarContext calendarContext;
 
     /**
      * @param config configuration of Calendar
@@ -40,18 +42,19 @@ public class ServerImpl implements Server {
         configContainer.addComponent(config);
         configContainer.addComponent(SimpleDateFormat.class);
 
+        // FIXME: Verify if I can change the dependency File for XMLCalendarDAO same for store container.
         MutablePicoContainer xmlContainer = new DefaultPicoContainer(configContainer).as(Characteristics.CACHE);
         xmlContainer.addComponent(ArrayList.class);
+        xmlContainer.addComponent(new File(config.getProperty(Config.DIRECTORY_NAME)));
         xmlContainer.addComponent(XMLCalendarDAO.class);
 
-        MutablePicoContainer calendarStore = new DefaultPicoContainer(xmlContainer).as(Characteristics.CACHE);
-        calendarStore.addComponent(CalendarEntity.class);
+        MutablePicoContainer context = new DefaultPicoContainer(xmlContainer).as(Characteristics.CACHE);
+        context.addComponent(CalendarContextImpl.class);
 
-        MutablePicoContainer serverContainer = new DefaultPicoContainer(calendarStore).as(Characteristics.CACHE);
+        MutablePicoContainer store = new DefaultPicoContainer(xmlContainer).as(Characteristics.CACHE);
+        store.addComponent(new CalendarEntity(config.getProperty(Config.CALENDAR_NAME)));
 
-//        serverContainer.addComponent()
-
-//        serverContainer.addComponent(CalendarEntity.class);
+        MutablePicoContainer serverContainer = new DefaultPicoContainer(store).as(Characteristics.CACHE);
         serverContainer.addComponent(CalendarAdd.class);
         serverContainer.addComponent(CalendarRemove.class);
         serverContainer.addComponent(CalendarList.class);
@@ -59,8 +62,6 @@ public class ServerImpl implements Server {
         serverContainer.addComponent(CalendarFind.class);
 
         this.container = serverContainer;
-
-        // TODO check if the start method should be called for every Calendar class
         this.container.start();
     }
 
@@ -79,8 +80,7 @@ public class ServerImpl implements Server {
             parameters =  putFieldsToMap(object);
 
         try {
-            // FIXME: Check if I have to use Calendar or CalendarImpl
-            list = String.valueOf(((CalendarImpl) this.container
+            list = String.valueOf(((Calendar) this.container
                     .getComponent(Class.forName(PACKAGE_NAME.concat(".").concat(command.getCommande()))))
                     .process(command, paramsToEventDTO(parameters)));
         } catch (ClassNotFoundException e) {

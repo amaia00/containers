@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 
 public interface ICalendarDAO {
 
@@ -53,6 +54,16 @@ public interface ICalendarDAO {
     Event findEvent(Event event, CalendarEntity calendar);
 
     void marshall(CalendarEntity calendar, File output) throws IOException;
+
+    /**
+     * Writes an calendarImpl to an output stream
+     *
+     * @param calendarImpl the calendarImpl to write
+     * @param output the output stream to write the calendarImpl to
+     * @throws IOException in case of IO problem
+     */
+    void marshall(CalendarEntity calendarImpl, Writer output) throws IOException;
+
 
     CalendarEntity unmarshall(StreamSource xml) throws JAXBException;
 }

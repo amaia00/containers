@@ -13,32 +13,33 @@ public class TestCalendarBuilder {
     private static Config config;
 
 
-    public static Calendar buildCalendar(String nom, Command command) {
+    public static Calendar buildCalendar(String nom, Command command, CalendarContext context) {
         config = new Config(nom, "/tmp");
         CalendarEntity calendarEntity = new CalendarEntity(nom);
         //CalendarImpl calendarImpl = new CalendarAdd(config, new CalendarEntity());
-        return getCalendarByAction(calendarEntity, command);
+        return getCalendarByAction(calendarEntity, command, context);
     }
 
-    public static CalendarImpl getCalendarByAction(CalendarEntity calendarEntity, Command command) {
+    public static CalendarImpl getCalendarByAction(CalendarEntity calendarEntity, Command command,
+                                                   CalendarContext context) {
         switch (command) {
             case ADD_EVENT:
-                return new CalendarAdd(config, calendarEntity);
+                return new CalendarAdd(config, calendarEntity, context);
             case LIST_EVENTS:
-                return new CalendarList(config, calendarEntity);
+                return new CalendarList(config, calendarEntity, context);
             case FIND_EVENT:
-                return new CalendarFind(config, calendarEntity);
+                return new CalendarFind(config, calendarEntity, context);
             case REMOVE_EVENT:
-                return new CalendarRemove(config, calendarEntity);
+                return new CalendarRemove(config, calendarEntity, context);
             case SYNC_EVENTS:
-                return new CalendarSync(config, calendarEntity);
+                return new CalendarSync(config, calendarEntity, context);
             default:
                 throw new RuntimeException("Not calendar founded");
         }
     }
 
-    public static Calendar calendar1() throws ParseException, ObjectNotFoundException {
-        Calendar calendarImpl = buildCalendar("My calendarImpl", Command.ADD_EVENT);
+    public static Calendar calendar1(CalendarContext context) throws ParseException, ObjectNotFoundException {
+        Calendar calendarImpl = buildCalendar("My calendarImpl", Command.ADD_EVENT, context);
         addCMJava(calendarImpl);
         return calendarImpl;
     }

@@ -1,6 +1,11 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao;
 
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.*;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarEntity;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContextImpl;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.TestCalendarBuilder;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -29,7 +34,7 @@ public class XMLCalendarDAOTest {
     private final static Logger LOG = LoggerFactory.getLogger(XMLCalendarDAOTest.class);
 
     private Calendar calendarImpl;
-    private XMLCalendarDAO xDao;
+    private CalendarContext context;
 
     private static Schema schema;
 
@@ -38,12 +43,17 @@ public class XMLCalendarDAOTest {
         schema = SchemaFactory
                 .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
                 .newSchema(new StreamSource(XMLCalendarDAO.class.getResourceAsStream("/calendar-schema.xsd")));
+
     }
 
     @Before
     public void setup() throws JAXBException, IOException, ParseException, ObjectNotFoundException {
-        calendarImpl = TestCalendarBuilder.calendar1();
-        xDao = new XMLCalendarDAO(new File("target/test-data"));
+
+//        xDao = new XMLCalendarDAO(new File("target/test-data"));
+        CalendarContext context = new CalendarContextImpl(new XMLCalendarDAO(new File("target/test-data")));
+        this.context = context;
+        calendarImpl = TestCalendarBuilder
+                .calendar1(context);
     }
 
     @Test
@@ -51,7 +61,7 @@ public class XMLCalendarDAOTest {
         Validator validator = schema.newValidator();
         StringWriter sw = new StringWriter();
 
-        xDao.marshall(calendarImpl.getEntity(), sw);
+        context.getCalendarDAO().marshall(calendarImpl.getEntity(), sw);
 
         StringReader sr = new StringReader(sw.toString());
         StreamSource ss = new StreamSource(sr);
@@ -65,8 +75,8 @@ public class XMLCalendarDAOTest {
 
     @Test
     public void testExportImport() throws CalendarNotFoundException {
-        xDao.saveCalendar(calendarImpl.getEntity());
-        CalendarEntity calendarImpl2 = xDao.loadCalendar(calendarImpl.getName());
+        context.getCalendarDAO().saveCalendar(calendarImpl.getEntity());
+        CalendarEntity calendarImpl2 = context.getCalendarDAO().loadCalendar(calendarImpl.getName());
         assertEquals(calendarImpl.getName(), calendarImpl2.getName());
         for (Event evt : calendarImpl.getEvents()) {
             assertTrue("Event " + evt.getId() + " not found in serialized calendarImpl",
@@ -80,7 +90,7 @@ public class XMLCalendarDAOTest {
 
     @Test
     public void testAddEvent() throws CalendarNotFoundException, ParseException, ObjectNotFoundException {
-        xDao.saveCalendar(calendarImpl.getEntity());
+        context.getCalendarDAO().saveCalendar(calendarImpl.getEntity());
         String id1 = calendarImpl.getEvents().iterator().next().getId();
         LOG.debug("Event in calendarImpl: {}", id1);
         Event evt = TestCalendarBuilder.addTPJava(calendarImpl);
@@ -89,9 +99,9 @@ public class XMLCalendarDAOTest {
         String id2 = it2.next().getId();
         LOG.debug("New event in calendarImpl: {}", id2);
         assertNotEquals(id1, id2);
-        xDao.saveEvent(evt, calendarImpl.getEntity());
+        context.getCalendarDAO().saveEvent(evt, calendarImpl.getEntity());
 
-        CalendarEntity calendar2 = xDao.loadCalendar(calendarImpl.getName());
+        CalendarEntity calendar2 = context.getCalendarDAO().loadCalendar(calendarImpl.getName());
         assertEquals(2, calendar2.getEvent().size());
         assertTrue("New event missing", calendar2.getEvent().contains(evt));
     }

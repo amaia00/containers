@@ -2,15 +2,12 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.ICalendarDAO;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.XMLCalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.CalendarContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,7 +38,7 @@ public abstract class CalendarImpl implements Calendar {
 //        this.entity.setEvent(new ArrayList<>());
 //    }
 
-    public CalendarImpl(Config config, CalendarEntity entity) {
+    public CalendarImpl(Config config, CalendarEntity entity, CalendarContext context) {
         this.config = config;
 
         this.entity = entity;
@@ -52,11 +49,11 @@ public abstract class CalendarImpl implements Calendar {
         if (entity.getName() == null)
             this.entity.setName(config.getProperty(Config.CALENDAR_NAME));
 
-        try {
-            this.dao = new XMLCalendarDAO(new File(config.getProperty(Config.DIRECTORY_NAME)));
-        } catch (JAXBException | IOException e) {
-            LOG.error(e.getMessage());
-        }
+//        try {
+            this.dao = context.getCalendarDAO();
+//        } catch (JAXBException | IOException e) {
+//            LOG.error(e.getMessage());
+//        }
     }
 
     @Override
