@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<config>
+    <application name="Calendar">
+        <business>
+            <component>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarAdd</class-name>
+            </component>
+            <component>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarRemove</class-name>
+            </component>
+            <component>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarSync</class-name>
+            </component>
+            <component>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarList</class-name>
+            </component>
+            <component>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarFind</class-name>
+            </component>
+        </business>
+        <persistence>
+            <dao>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.XMLCalendarDAO</class-name>
+                <param>test.xml</param>
+            </dao>
+        </persistence>
+    </application>
+</config>

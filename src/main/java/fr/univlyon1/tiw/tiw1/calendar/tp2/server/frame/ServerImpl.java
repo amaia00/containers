@@ -1,10 +1,12 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.server.frame;
 
+import fr.univlyon1.tiw.tiw1.calendar.tp2.config.ApplicationConfig;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.XMLCalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.*;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarEntity;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarImpl;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.RegistryVariable;
@@ -15,8 +17,11 @@ import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
@@ -38,21 +43,23 @@ public class ServerImpl implements Server, Observer {
      *               - The date format
      *               - The calendars' name
      */
-    public ServerImpl(Config config, Annuaire annuaire) {
+    public ServerImpl (Config config, Annuaire annuaire) throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException {
+
+        ApplicationConfig applicationConfig = new ApplicationConfig();
 
         MutablePicoContainer configContainer = new DefaultPicoContainer().as(Characteristics.CACHE);
         configContainer.addComponent(SimpleDateFormat.class);
 
-        // FIXME: Verify if I can change the dependency File for XMLCalendarDAO same for store container.
-        MutablePicoContainer xmlContainer = new DefaultPicoContainer(configContainer).as(Characteristics.CACHE);
-        xmlContainer.addComponent(ArrayList.class);
-        xmlContainer.addComponent(new File(config.getProperty(Config.DIRECTORY_NAME)));
-        xmlContainer.addComponent(XMLCalendarDAO.class);
+        MutablePicoContainer daoContainer = new DefaultPicoContainer(configContainer).as(Characteristics.CACHE);
+        daoContainer.addComponent(ArrayList.class);
+        daoContainer.addComponent(new File(config.getProperty(Config.DIRECTORY_NAME)));
+        daoContainer.addComponent(applicationConfig.getDAOClass());
 
-        MutablePicoContainer store = new DefaultPicoContainer(xmlContainer).as(Characteristics.CACHE);
+        MutablePicoContainer store = new DefaultPicoContainer(daoContainer).as(Characteristics.CACHE);
         store.addComponent(new CalendarEntity(config.getProperty(Config.CALENDAR_NAME)));
 
         /* ***  Creation of context for every layer (root, application, business and persistence) *** */
+
         MutablePicoContainer contextRoot = new DefaultPicoContainer(configContainer).as(Characteristics.CACHE);
         contextRoot.addComponent(CalendarContextImpl.class);
         contextRoot.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.CONFIG, config);
@@ -67,10 +74,10 @@ public class ServerImpl implements Server, Observer {
         contextBusiness.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.ENTITY,
                 store.getComponent(CalendarEntity.class));
 
-        MutablePicoContainer contextPersistence = new DefaultPicoContainer(xmlContainer).as(Characteristics.CACHE);
+        MutablePicoContainer contextPersistence = new DefaultPicoContainer(daoContainer).as(Characteristics.CACHE);
         contextPersistence.addComponent(CalendarContextImpl.class);
         contextPersistence.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.DAO,
-                xmlContainer.getComponent(XMLCalendarDAO.class));
+                daoContainer.getComponent(applicationConfig.getDAOClass()));
 
 
         /* *** Setting of all the context on the registry *** */
@@ -79,15 +86,13 @@ public class ServerImpl implements Server, Observer {
         annuaire.setRegistry(RegistryVariable.CONTEXT_BUSINESS, contextBusiness.getComponent(CalendarContextImpl.class));
         annuaire.setRegistry(RegistryVariable.CONTEXT_PERSISTENCE, contextPersistence.getComponent(CalendarContextImpl.class));
 
-
         MutablePicoContainer serverContainer = new DefaultPicoContainer().as(Characteristics.CACHE);
         serverContainer.addComponent(config);
         serverContainer.addComponent(annuaire);
-        serverContainer.addComponent(CalendarAdd.class);
-        serverContainer.addComponent(CalendarRemove.class);
-        serverContainer.addComponent(CalendarList.class);
-        serverContainer.addComponent(CalendarSync.class);
-        serverContainer.addComponent(CalendarFind.class);
+
+        for (Class classBusiness: applicationConfig.getAllBusinessComponentsClass()) {
+            serverContainer.addComponent(classBusiness);
+        }
 
         this.container = serverContainer;
         this.container.start();

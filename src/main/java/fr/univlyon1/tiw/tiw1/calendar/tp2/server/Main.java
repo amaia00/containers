@@ -4,8 +4,10 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.client.CalendarUI;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.frame.ServerImpl;
+import org.xml.sax.SAXException;
 
-import java.io.InvalidClassException;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 
 /**
  * @author Amaia Nazábal
@@ -14,7 +16,7 @@ import java.io.InvalidClassException;
  */
 public class Main {
 
-    public static void main(String[] args) throws InvalidClassException {
+    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException, ClassNotFoundException {
 
         Config config = new Config("My calendar", "EEE MMM dd kk:mm:ss zzz yyyy", "/tmp");
 

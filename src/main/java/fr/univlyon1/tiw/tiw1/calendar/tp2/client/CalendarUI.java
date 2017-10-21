@@ -32,14 +32,17 @@ public class CalendarUI implements Observer{
     public void start() {
         while (true) {
             CalendarUI.showMenu();
-            int option = CalendarUI.readLine().charAt(0) - '0';
-
-            if (option == 5)
-                return;
             try {
+                int option = CalendarUI.readLine().charAt(0) - '0';
+
+                if (option == 5)
+                    return;
+
                 this.processOption(option);
             } catch (ObjectNotFoundException e) {
                 System.out.println(e.getMessage());
+            } catch (StringIndexOutOfBoundsException e) {
+                LOG.info(e.getMessage());
             }
         }
     }
