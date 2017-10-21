@@ -6,6 +6,7 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.RegistryVariable;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContext;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.ContextVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
-public abstract class CalendarImpl implements Calendar {
+public abstract class CalendarImpl implements Calendar, Observer {
     private static final Logger LOG = LoggerFactory.getLogger(CalendarImpl.class);
 
     private CalendarEntity entity;
@@ -26,6 +29,7 @@ public abstract class CalendarImpl implements Calendar {
 
     public CalendarImpl(Config config, Annuaire annuaire) {
         this.config = config;
+        annuaire.addObserver(this);
 
         try {
             this.entity = (CalendarEntity) annuaire.getRegistry(RegistryVariable.CONTEXT_BUSINESS)
@@ -122,5 +126,14 @@ public abstract class CalendarImpl implements Calendar {
     @Override
     public void stop() {
         System.out.println("LIFE CYCLE: CalendarImpl detenu. Objet d'accès aux données : ".concat(this.toString()));
+    }
+
+    public void update(Observable o, Object arg) {
+        try {
+            this.entity = (CalendarEntity) ((CalendarContext) arg).getContextVariable(ContextVariable.ENTITY);
+            this.dao = (ICalendarDAO) ((CalendarContext) arg).getContextVariable(ContextVariable.DAO);
+        } catch (InvalidClassException e) {
+            LOG.error(e.getMessage());
+        }
     }
 }

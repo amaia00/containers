@@ -5,6 +5,7 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.RegistryVariable;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContext;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.ContextVariable;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.frame.Server;
 import org.slf4j.Logger;
@@ -13,15 +14,19 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.InvalidClassException;
+import java.util.Observable;
+import java.util.Observer;
 
-public class CalendarUI {
+public class CalendarUI implements Observer{
 
     private static final Logger LOG = LoggerFactory.getLogger(CalendarUI.class);
     private Server calendarServerImpl;
 
     public CalendarUI(Annuaire annuaire) throws InvalidClassException {
+        annuaire.addObserver(this);
         this.calendarServerImpl = (Server) annuaire.getRegistry(RegistryVariable.CONTEXT_ROOT)
                 .getContextVariable(ContextVariable.REQUEST);
+
     }
 
     public void start() {
@@ -103,6 +108,16 @@ public class CalendarUI {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return ("data entry error");
+        }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        try {
+            this.calendarServerImpl = (Server) ((CalendarContext) arg)
+                    .getContextVariable(ContextVariable.REQUEST);
+        } catch (InvalidClassException e) {
+            LOG.error(e.getMessage());
         }
     }
 }

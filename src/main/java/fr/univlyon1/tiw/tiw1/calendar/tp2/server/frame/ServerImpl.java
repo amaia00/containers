@@ -3,11 +3,11 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.server.frame;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.XMLCalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.*;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.RegistryVariable;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContext;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContextImpl;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.ContextVariable;
 import org.picocontainer.Characteristics;
@@ -20,20 +20,17 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Amaia Nazábal
  * @version 1.0
  * @since 1.0 10/19/17.
  */
-public class ServerImpl implements Server {
+public class ServerImpl implements Server, Observer {
     private static final String PACKAGE_NAME = CalendarImpl.class.getPackage().getName();
     private static final Logger LOG = LoggerFactory.getLogger(ServerImpl.class);
     private MutablePicoContainer container = new DefaultPicoContainer();
-    private CalendarContext calendarContext;
 
     /**
      * @param config configuration of Calendar
@@ -94,6 +91,8 @@ public class ServerImpl implements Server {
 
         this.container = serverContainer;
         this.container.start();
+
+        annuaire.addObserver(this);
     }
 
     @Override
@@ -144,5 +143,10 @@ public class ServerImpl implements Server {
         }
 
         return fields;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        // TODO: What should I add here??
     }
 }
