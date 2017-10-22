@@ -71,6 +71,13 @@ public class ApplicationConfig {
         return classDAO;
     }
 
+    public String getConfByName(ConfigType configType) {
+        NodeList list = document.getElementsByTagName("dao");
+        Element element = (Element) list.item(0);
+
+        return element.getElementsByTagName(configType.getName()).item(0).getTextContent();
+    }
+
 
     public int getMaxInstances() {
         NodeList list = document.getElementsByTagName("pool-instances");

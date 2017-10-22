@@ -21,7 +21,9 @@
         <persistence>
             <dao>
                 <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.XMLCalendarDAO</class-name>
-                <param>test.xml</param>
+                <file-name>My Calendar.xml</file-name>
+                <path-file>/tmp</path-file>
+                <format-date>EEE MMM dd kk:mm:ss zzz yyyy</format-date>
             </dao>
         </persistence>
         <pool-instances>

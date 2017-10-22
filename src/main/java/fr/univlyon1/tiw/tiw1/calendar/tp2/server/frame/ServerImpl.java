@@ -2,6 +2,7 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.server.frame;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.ApplicationConfig;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.config.ConfigType;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.ICalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
@@ -41,17 +42,41 @@ public class ServerImpl implements Server, Observer {
     private static final Logger LOG = LoggerFactory.getLogger(ServerImpl.class);
     private MutablePicoContainer container = new DefaultPicoContainer();
 
+
+    /**
+     *
+     * @param annuaire
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public ServerImpl(Annuaire annuaire) throws ParserConfigurationException, SAXException, IOException,
+            ClassNotFoundException {
+
+        ApplicationConfig applicationConfig = new ApplicationConfig();
+
+        Config config = new Config();
+        config.setProperty(Config.CALENDAR_NAME, applicationConfig.getConfByName(ConfigType.FILE_NAME).replace(".xml", ""));
+        config.setProperty(Config.DIRECTORY_NAME, applicationConfig.getConfByName(ConfigType.PATH_FILE));
+        config.setProperty(Config.DATE_FORMAT, applicationConfig.getConfByName(ConfigType.FORMAT_DATE));
+
+        new ServerImpl(config, annuaire);
+    }
+
     /**
      * @param config configuration of Calendar
      *               - The file name
      *               - The date format
      *               - The calendars' name
+     * @param annuaire
      */
     public ServerImpl (Config config, Annuaire annuaire) throws ParserConfigurationException, SAXException, IOException,
             ClassNotFoundException {
 
         ApplicationConfig applicationConfig = new ApplicationConfig();
 
+        /* Definition of dependencies */
         MutablePicoContainer serverContainer = new DefaultPicoContainer().as(Characteristics.CACHE);
         serverContainer.addComponent(SimpleDateFormat.class);
         serverContainer.addComponent(ArrayList.class);
@@ -61,6 +86,7 @@ public class ServerImpl implements Server, Observer {
         serverContainer.addComponent(CalendarEntity.class, new CalendarEntity(config.getProperty(Config.CALENDAR_NAME)));
 
 
+        /* Definition of context for every layer */
         serverContainer.addComponent(RegistryVariable.CONTEXT_ROOT.getContextName(), CalendarContextImpl.class);
         ((CalendarContext) serverContainer.getComponent(RegistryVariable.CONTEXT_ROOT.getContextName()))
                 .setContextVariable(ContextVariable.CONFIG, config);
@@ -81,7 +107,8 @@ public class ServerImpl implements Server, Observer {
                 CalendarContextImpl.class)).setContextVariable(ContextVariable.DAO,
                 serverContainer.getComponent(ICalendarDAO.class));
 
-        /* *** Instance of event administrator *** */
+
+        /* *** Instance of event administrator -> container son *** */
         EventContainer eventContainer = new EventContainer(new Caching().wrap(new AnnotatedFieldInjection()),
                 serverContainer, applicationConfig.getMaxInstances());
 
@@ -93,6 +120,7 @@ public class ServerImpl implements Server, Observer {
 
         serverContainer.addConfig("eventContainer", eventContainer);
 
+        /* Setting of annuaire for every layer */
         annuaire.setRegistry(RegistryVariable.CONTEXT_ROOT, serverContainer
                 .getComponent(RegistryVariable.CONTEXT_ROOT.getContextName()));
         annuaire.setRegistry(RegistryVariable.CONTEXT_APPLICATION, serverContainer
@@ -104,6 +132,7 @@ public class ServerImpl implements Server, Observer {
 
         serverContainer.addComponent(annuaire);
 
+        /* Add to the container the class defined in the configuration file */
         for (Class classBusiness: applicationConfig.getAllBusinessComponentsClass()) {
             serverContainer.addComponent(classBusiness.getSimpleName(), classBusiness);
 
@@ -116,10 +145,7 @@ public class ServerImpl implements Server, Observer {
 
         this.container = serverContainer;
         this.container.start();
-//
-//        for (Class classBusiness: applicationConfig.getAllBusinessComponentsClass()) {
-//
-//        }
+
         annuaire.addObserver(this);
     }
 

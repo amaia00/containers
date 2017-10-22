@@ -9,6 +9,11 @@ public class Config {
     public static final String DIRECTORY_NAME = "file_name";
     public static final String CALENDAR_NAME = "calendar_name";
 
+
+    public Config() {
+        // In the case that we want to inject config through a XML file
+    }
+
     public Config(String name, String directory) {
         defaultCfg.setProperty(DATE_FORMAT, "EEE MMM dd kk:mm:ss zzz yyyy");
         defaultCfg.setProperty(DIRECTORY_NAME, directory);
@@ -27,6 +32,10 @@ public class Config {
 
     public String getProperty(String property) {
         return defaultCfg.getProperty(property);
+    }
+
+    public void setProperty(String property, String value) {
+         defaultCfg.setProperty(property, value);
     }
 
 }
