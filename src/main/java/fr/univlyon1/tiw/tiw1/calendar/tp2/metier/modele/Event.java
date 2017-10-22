@@ -1,15 +1,17 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Util;
 import org.picocontainer.Startable;
 import org.picocontainer.annotations.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
-@XmlType(propOrder = {"id", "title", "start", "end", "description"})
 public class Event implements Startable {
+    private static final Logger LOG = LoggerFactory.getLogger(Event.class);
     @Inject private String title;
     @Inject private String description;
     @Inject private Date start;
@@ -60,7 +62,6 @@ public class Event implements Startable {
         this.end = end;
     }
 
-    @XmlAttribute
     public String getId() {
         return id;
     }
@@ -69,8 +70,7 @@ public class Event implements Startable {
         this.id = id;
     }
 
-    // Pour la comparaison dans la suppression
-    // On approxime les dates à la précision du format près, ça suffit bien...
+
     @Override
     public boolean equals(Object o) {
 //        if (this == o)
@@ -85,16 +85,18 @@ public class Event implements Startable {
         Event event = (Event) o;
 
         try {
-            long durationStart = this.start.getTime() - event.getStart().getTime();
-            long durationEnd = this.end.getTime() - event.getEnd().getTime();
+            long diffStart = Util.getDateDiff(this.start, event.getStart(), TimeUnit.MINUTES);
+            long diffEnd = Util.getDateDiff(this.end, event.getEnd(), TimeUnit.MINUTES);
 
+            return this.title.equals(event.title) &&
+                    this.description.equals(event.description) &&
+                    diffStart < 5 && diffEnd < 5;
         } catch (NullPointerException e) {
-            // TODO: ADD LOG
+            LOG.warn(e.getMessage());
         }
 
-        // TODO comparaison de temps
-        return this.title.equals(event.title) &&
-                this.description.equals(event.description);
+
+        return false;
     }
 
     @Override

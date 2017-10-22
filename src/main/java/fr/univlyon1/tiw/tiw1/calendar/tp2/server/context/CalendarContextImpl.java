@@ -28,8 +28,7 @@ public class CalendarContextImpl implements CalendarContext{
 
         String className = elements[2].getClassName();
 
-        // FIXME: remove naivemethodaccessor (?) for test purposes
-        if (className.matches("(.*).Calendar(Add|Remove|List|Find|Sync|Impl|UI)") || className.contains("Main") || className.equals("sun.reflect.NativeMethodAccessorImpl"))
+        if (className.matches("(.*).Calendar(Add|Remove|List|Find|Sync|Impl|UI)"))
             return contextVariables.get(variable);
 
         throw new InvalidClassException("The caller class should be a calendar. Founded class: ".concat(className) );

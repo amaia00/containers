@@ -56,8 +56,8 @@ public class ServerImpl implements Server, Observer {
         serverContainer.addComponent(SimpleDateFormat.class);
         serverContainer.addComponent(ArrayList.class);
         serverContainer.addComponent(new File(config.getProperty(Config.DIRECTORY_NAME)));
-        serverContainer.addComponent(applicationConfig.getDAOClass());
-        serverContainer.addComponent(config);
+        serverContainer.addComponent(ICalendarDAO.class, applicationConfig.getDAOClass());
+        serverContainer.addComponent(Config.class, config);
         serverContainer.addComponent(CalendarEntity.class, new CalendarEntity(config.getProperty(Config.CALENDAR_NAME)));
 
 
@@ -79,12 +79,11 @@ public class ServerImpl implements Server, Observer {
         serverContainer.addComponent(RegistryVariable.CONTEXT_PERSISTENCE.getContextName(), CalendarContextImpl.class);
         ((CalendarContext) serverContainer.getComponent(RegistryVariable.CONTEXT_PERSISTENCE.getContextName(),
                 CalendarContextImpl.class)).setContextVariable(ContextVariable.DAO,
-                serverContainer.getComponent(applicationConfig.getDAOClass()));
+                serverContainer.getComponent(ICalendarDAO.class));
 
         /* *** Instance of event administrator *** */
         EventContainer eventContainer = new EventContainer(new Caching().wrap(new AnnotatedFieldInjection()),
-                serverContainer, applicationConfig.getMaxInstances(), (ICalendarDAO) serverContainer
-                .getComponent(applicationConfig.getDAOClass()));
+                serverContainer, applicationConfig.getMaxInstances());
 
         eventContainer.addComponent("id", String.class);
         eventContainer.addComponent("title", String.class);
@@ -176,6 +175,6 @@ public class ServerImpl implements Server, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        // TODO: What should I add here??
+        /* Il n'y a pas besoin de rien faire pour le moment */
     }
 }

@@ -4,7 +4,6 @@
  * @since 1.0 10/12/17.
  *
  *
- * TODO: Verify if I have to keep this file or if I can remove it
  */
 @XmlSchema(elementFormDefault = XmlNsForm.QUALIFIED,
         namespace = "http://master-info.univ-lyon1.fr/TIW/TIW1/calendar")

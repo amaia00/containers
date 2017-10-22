@@ -41,7 +41,6 @@ public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
         return new File(directory, calendarName + ".xml");
     }
 
-    // FIXME: The first time than we add a new event the method save override all the events in the existent file.
     @Override
     public void saveCalendar(CalendarEntity calendarImpl) {
         File outputFile = fileFromCalendarName(calendarImpl.getName());
