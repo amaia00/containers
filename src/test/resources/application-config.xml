@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<config>
+    <application name="Calendar">
+        <business>
+            <component>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.composants.CalendarAdd</class-name>
+            </component>
+            <component>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.composants.CalendarRemove</class-name>
+            </component>
+            <component>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.composants.CalendarSync</class-name>
+            </component>
+            <component>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.composants.CalendarList</class-name>
+            </component>
+            <component>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.composants.CalendarFind</class-name>
+            </component>
+        </business>
+        <persistence>
+            <dao>
+                <class-name>fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.XMLCalendarDAO</class-name>
+                <file-name>test.xml</file-name>
+                <path-file>/tmp</path-file>
+                <format-date>EEE MMM dd kk:mm:ss zzz yyyy</format-date>
+            </dao>
+        </persistence>
+        <pool-instances>
+            <max-instances>3</max-instances>
+        </pool-instances>
+    </application>
+</config>
