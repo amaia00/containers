@@ -4,6 +4,7 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarImpl;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.EventContainer;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 
@@ -14,8 +15,8 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
  */
 public class CalendarList extends CalendarImpl {
 
-    public CalendarList(Config config, Annuaire annuaire) {
-        super(config, annuaire);
+    public CalendarList(Config config, Annuaire annuaire, EventContainer eventContainer) {
+        super(config, annuaire, eventContainer);
     }
 
     @Override
@@ -39,9 +40,10 @@ public class CalendarList extends CalendarImpl {
     }
 
     @Override
-    protected String getInfos() {
+    protected String getInfo() {
         StringBuilder info = new StringBuilder();
-        for (Event event : getEvents()) {
+
+        for (Event event : getEventContainer().list()) {
             EventDTO eventDTO = new EventDTO(event.getTitle(), event.getDescription(), this.formatDate(event.getStart()),
                     this.formatDate(event.getEnd()), event.getId());
             info.append(eventDTO.toString());

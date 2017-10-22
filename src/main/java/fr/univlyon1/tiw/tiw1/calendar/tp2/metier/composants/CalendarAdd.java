@@ -4,6 +4,7 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarImpl;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.EventContainer;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import org.slf4j.Logger;
@@ -19,8 +20,8 @@ import java.util.UUID;
 public class CalendarAdd extends CalendarImpl {
     private static final Logger LOG = LoggerFactory.getLogger(CalendarAdd.class);
 
-    public CalendarAdd(Config config, Annuaire annuaire) {
-        super(config, annuaire);
+    public CalendarAdd(Config config, Annuaire annuaire, EventContainer eventContainer) {
+        super(config, annuaire, eventContainer);
     }
 
     @Override
@@ -30,7 +31,8 @@ public class CalendarAdd extends CalendarImpl {
                 this.parseDate(eventDTO.getEnd()));
         event.setId(UUID.randomUUID().toString());
 
-        getEvents().add(event);
+        getEventContainer().add(event);
+
         try {
             dao.saveEvent(event, getEntity());
             LOG.debug("DAO called in addEvent");
@@ -56,7 +58,7 @@ public class CalendarAdd extends CalendarImpl {
     }
 
     @Override
-    protected String getInfos() {
+    protected String getInfo() {
         throw new UnsupportedOperationException();
     }
 

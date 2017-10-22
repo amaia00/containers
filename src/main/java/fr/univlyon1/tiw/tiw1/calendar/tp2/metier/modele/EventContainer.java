@@ -86,6 +86,33 @@ public class EventContainer extends DefaultPicoContainer implements  Observer {
         return eventList;
     }
 
+
+    public void sync(List<Event> eventList) {
+
+        System.out.println("Nombre d'événements : " + eventList.size());
+
+        /* *** Vidage du conteneur d'événements *** */
+        stop();
+        for(Object event: getComponents()) {
+            removeComponentByInstance(event);
+        }
+
+        /* Synchronisation du conteneur d'événements et du support de persistance */
+        int i = 0;
+        for (Event event : eventList) {
+            addComponent(EVENT + i, event);
+            Event temp = (Event) getComponent(EVENT + i);
+            temp.setTitle(event.getTitle());
+            temp.setDescription(event.getDescription());
+            temp.setStart(event.getStart());
+            temp.setEnd(event.getEnd());
+
+            i++;
+        }
+
+        start();
+    }
+
     @Override
     public void update(Observable o, Object arg) {
         // TODO: ??

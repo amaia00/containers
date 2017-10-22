@@ -4,6 +4,7 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarImpl;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.EventContainer;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 
@@ -14,8 +15,8 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
  */
 public class CalendarFind extends CalendarImpl {
 
-    public CalendarFind(Config config, Annuaire annuaire) {
-        super(config, annuaire);
+    public CalendarFind(Config config, Annuaire annuaire, EventContainer eventContainer) {
+        super(config, annuaire, eventContainer);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class CalendarFind extends CalendarImpl {
     }
 
     @Override
-    protected String getInfos() {
+    protected String getInfo() {
         throw new UnsupportedOperationException();
     }
 }

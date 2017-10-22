@@ -37,6 +37,6 @@ public interface Calendar extends Startable {
 //
 //    abstract void synchronizeEvents();
 //
-//    abstract String getInfos();
+//    abstract String getInfo();
 
 }

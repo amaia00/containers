@@ -25,12 +25,12 @@ public abstract class CalendarImpl implements Calendar, Observer {
     private CalendarEntity entity;
     protected ICalendarDAO dao;
     private Config config;
+    private EventContainer eventContainer;
 
-
-    public CalendarImpl(Config config, Annuaire annuaire) {
+    public CalendarImpl(Config config, Annuaire annuaire, EventContainer eventContainer) {
         this.config = config;
         annuaire.addObserver(this);
-
+        this.eventContainer = eventContainer;
         try {
             this.entity = (CalendarEntity) ((CalendarContext)annuaire.getRegistry(RegistryVariable.CONTEXT_BUSINESS))
                     .getContextVariable(ContextVariable.ENTITY);
@@ -64,7 +64,7 @@ public abstract class CalendarImpl implements Calendar, Observer {
                 removeEvent(eventDTO);
                 break;
             case LIST_EVENTS:
-                reponse = getInfos();
+                reponse = getInfo();
                 break;
             case FIND_EVENT:
                 reponse = findEvent(eventDTO);
@@ -74,6 +74,8 @@ public abstract class CalendarImpl implements Calendar, Observer {
 
         }
 
+        /* We add this line for keep the consistence between the container and the mapping class */
+        entity.sync(getEventContainer().list());
         return reponse;
     }
 
@@ -98,7 +100,7 @@ public abstract class CalendarImpl implements Calendar, Observer {
      *
      * @return une string formattée contentant toutes les infos des événements de l'calendar
      */
-    protected abstract String getInfos();
+    protected abstract String getInfo();
 
     protected String formatDate(Date d) {
         return new SimpleDateFormat(this.config.getProperty(Config.DATE_FORMAT)).format(d);
@@ -135,5 +137,9 @@ public abstract class CalendarImpl implements Calendar, Observer {
         } catch (InvalidClassException e) {
             LOG.error(e.getMessage());
         }
+    }
+
+    protected EventContainer getEventContainer() {
+        return eventContainer;
     }
 }
