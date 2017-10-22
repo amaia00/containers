@@ -24,5 +24,8 @@
                 <param>test.xml</param>
             </dao>
         </persistence>
+        <pool-instances>
+            <max-instances>3</max-instances>
+        </pool-instances>
     </application>
 </config>

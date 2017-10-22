@@ -41,14 +41,7 @@ public class CalendarList extends CalendarImpl {
 
     @Override
     protected String getInfo() {
-        StringBuilder info = new StringBuilder();
-
-        for (Event event : getEventContainer().list()) {
-            EventDTO eventDTO = new EventDTO(event.getTitle(), event.getDescription(), this.formatDate(event.getStart()),
-                    this.formatDate(event.getEnd()), event.getId());
-            info.append(eventDTO.toString());
-        }
-        return info.toString();
+        return getEventContainer().list();
     }
 
 }

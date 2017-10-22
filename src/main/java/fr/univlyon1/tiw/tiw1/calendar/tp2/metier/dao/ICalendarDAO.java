@@ -33,17 +33,17 @@ public interface ICalendarDAO {
 
     /**
      * Sauve un evenement d'un calendrier dans le support de persitance.
+     * @param name le nom du calendrier dans lequel se trouve l'evenement.
      * @param event l'evenement à sauver.
-     * @param calendar le calendrier dans lequel se trouve l'evenement.
      */
-    void saveEvent(Event event, CalendarEntity calendar);
+    void saveEvent(String name, Event event);
 
     /**
      * Supprime un evenement d'un calendrier dans le support de persitance.
+     * @param name le calendrier dans lequel se trouve l'evenement.
      * @param event l'evenement à sauver.
-     * @param calendar le calendrier dans lequel se trouve l'evenement.
      */
-    void deleteEvent(Event event, CalendarEntity calendar);
+    void deleteEvent(String name, Event event);
 
     /**
      *

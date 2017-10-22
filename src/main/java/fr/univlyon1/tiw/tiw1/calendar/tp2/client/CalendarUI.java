@@ -67,7 +67,8 @@ public class CalendarUI implements Observer{
 
                 EventDTO eventDTO = new EventDTO(title, description, start, end, null);
 
-                if (option == 1) calendarServerImpl.processRequest(Command.ADD_EVENT, eventDTO);
+                if (option == 1)
+                    calendarServerImpl.processRequest(Command.ADD_EVENT, eventDTO);
                 else {
                     try {
                         calendarServerImpl.processRequest(Command.REMOVE_EVENT, eventDTO);

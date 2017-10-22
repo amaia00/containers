@@ -2,12 +2,16 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.server.frame;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.ApplicationConfig;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.ICalendarDAO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Calendar;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.*;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarEntity;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.EventContainer;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.RegistryVariable;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContext;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.CalendarContextImpl;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.context.ContextVariable;
 import org.picocontainer.Characteristics;
@@ -49,68 +53,74 @@ public class ServerImpl implements Server, Observer {
         ApplicationConfig applicationConfig = new ApplicationConfig();
 
         MutablePicoContainer serverContainer = new DefaultPicoContainer().as(Characteristics.CACHE);
+        serverContainer.addComponent(SimpleDateFormat.class);
+        serverContainer.addComponent(ArrayList.class);
+        serverContainer.addComponent(new File(config.getProperty(Config.DIRECTORY_NAME)));
+        serverContainer.addComponent(applicationConfig.getDAOClass());
+        serverContainer.addComponent(config);
+        serverContainer.addComponent(CalendarEntity.class, new CalendarEntity(config.getProperty(Config.CALENDAR_NAME)));
 
 
-        MutablePicoContainer configContainer = new DefaultPicoContainer().as(Characteristics.CACHE);
-        configContainer.addComponent(SimpleDateFormat.class);
+        serverContainer.addComponent(RegistryVariable.CONTEXT_ROOT.getContextName(), CalendarContextImpl.class);
+        ((CalendarContext) serverContainer.getComponent(RegistryVariable.CONTEXT_ROOT.getContextName()))
+                .setContextVariable(ContextVariable.CONFIG, config);
+        ((CalendarContext) serverContainer.getComponent(RegistryVariable.CONTEXT_ROOT.getContextName()))
+                .setContextVariable(ContextVariable.REQUEST, this);
 
+        serverContainer.addComponent(RegistryVariable.CONTEXT_APPLICATION.getContextName(), CalendarContextImpl.class);
+        ((CalendarContext) serverContainer.getComponent(RegistryVariable.CONTEXT_APPLICATION.getContextName()))
+                .setContextVariable(ContextVariable.CONFIG, config);
+
+        serverContainer.addComponent(RegistryVariable.CONTEXT_BUSINESS.getContextName(), CalendarContextImpl.class);
+        ((CalendarContext) serverContainer.getComponent(RegistryVariable.CONTEXT_BUSINESS.getContextName()))
+                .setContextVariable(ContextVariable.ENTITY,
+                serverContainer.getComponent(CalendarEntity.class));
+
+        serverContainer.addComponent(RegistryVariable.CONTEXT_PERSISTENCE.getContextName(), CalendarContextImpl.class);
+        ((CalendarContext) serverContainer.getComponent(RegistryVariable.CONTEXT_PERSISTENCE.getContextName(),
+                CalendarContextImpl.class)).setContextVariable(ContextVariable.DAO,
+                serverContainer.getComponent(applicationConfig.getDAOClass()));
 
         /* *** Instance of event administrator *** */
         EventContainer eventContainer = new EventContainer(new Caching().wrap(new AnnotatedFieldInjection()),
-                serverContainer, annuaire);
-        serverContainer.addComponent(eventContainer);
+                serverContainer, applicationConfig.getMaxInstances(), (ICalendarDAO) serverContainer
+                .getComponent(applicationConfig.getDAOClass()));
 
+        eventContainer.addComponent("id", String.class);
+        eventContainer.addComponent("title", String.class);
+        eventContainer.addComponent("description", String.class);
+        eventContainer.addComponent("start", Date.class);
+        eventContainer.addComponent("end", Date.class);
 
-        MutablePicoContainer daoContainer = new DefaultPicoContainer(configContainer).as(Characteristics.CACHE);
-        daoContainer.addComponent(ArrayList.class);
-        daoContainer.addComponent(new File(config.getProperty(Config.DIRECTORY_NAME)));
-        daoContainer.addComponent(applicationConfig.getDAOClass());
+        serverContainer.addConfig("eventContainer", eventContainer);
 
-        MutablePicoContainer store = new DefaultPicoContainer(daoContainer).as(Characteristics.CACHE);
-        store.addComponent(new CalendarEntity(config.getProperty(Config.CALENDAR_NAME)));
+        annuaire.setRegistry(RegistryVariable.CONTEXT_ROOT, serverContainer
+                .getComponent(RegistryVariable.CONTEXT_ROOT.getContextName()));
+        annuaire.setRegistry(RegistryVariable.CONTEXT_APPLICATION, serverContainer
+                .getComponent(RegistryVariable.CONTEXT_APPLICATION.getContextName()));
+        annuaire.setRegistry(RegistryVariable.CONTEXT_BUSINESS, serverContainer
+                .getComponent(RegistryVariable.CONTEXT_BUSINESS.getContextName()));
+        annuaire.setRegistry(RegistryVariable.CONTEXT_PERSISTENCE, serverContainer
+                .getComponent(RegistryVariable.CONTEXT_PERSISTENCE.getContextName()));
 
-
-        /* ***  Creation of context for every layer (root, application, business and persistence) *** */
-        MutablePicoContainer contextRoot = new DefaultPicoContainer(configContainer).as(Characteristics.CACHE);
-        contextRoot.addComponent(CalendarContextImpl.class);
-        contextRoot.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.CONFIG, config);
-        contextRoot.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.REQUEST, this);
-
-        MutablePicoContainer contextApp = new DefaultPicoContainer(configContainer).as(Characteristics.CACHE);
-        contextApp.addComponent(CalendarContextImpl.class);
-        contextApp.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.CONFIG, config);
-
-        MutablePicoContainer contextBusiness = new DefaultPicoContainer(store).as(Characteristics.CACHE);
-        contextBusiness.addComponent(CalendarContextImpl.class);
-        contextBusiness.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.ENTITY,
-                store.getComponent(CalendarEntity.class));
-
-        MutablePicoContainer contextPersistence = new DefaultPicoContainer(daoContainer).as(Characteristics.CACHE);
-        contextPersistence.addComponent(CalendarContextImpl.class);
-        contextPersistence.getComponent(CalendarContextImpl.class).setContextVariable(ContextVariable.DAO,
-                daoContainer.getComponent(applicationConfig.getDAOClass()));
-
-
-        /* *** Setting of all the context on the registry *** */
-        annuaire.setRegistry(RegistryVariable.CONTEXT_ROOT, contextRoot.getComponent(CalendarContextImpl.class));
-        annuaire.setRegistry(RegistryVariable.CONTEXT_APPLICATION, contextApp.getComponent(CalendarContextImpl.class));
-        annuaire.setRegistry(RegistryVariable.CONTEXT_BUSINESS, contextBusiness.getComponent(CalendarContextImpl.class));
-        annuaire.setRegistry(RegistryVariable.CONTEXT_PERSISTENCE, contextPersistence.getComponent(CalendarContextImpl.class));
-
-
-        serverContainer.addComponent(config);
         serverContainer.addComponent(annuaire);
 
         for (Class classBusiness: applicationConfig.getAllBusinessComponentsClass()) {
-            serverContainer.addComponent(classBusiness);
-            contextBusiness.getComponent(CalendarContextImpl.class).setContextVariable(classBusiness.getName(),
-                    store.getComponent(CalendarEntity.class));
+            serverContainer.addComponent(classBusiness.getSimpleName(), classBusiness);
+
+            ((CalendarContext) serverContainer.getComponent(RegistryVariable.CONTEXT_BUSINESS.getContextName()))
+                    .setContextVariable(classBusiness.getName(), serverContainer.getComponent(CalendarEntity.class));
             packageName = classBusiness.getPackage().getName();
+
+            annuaire.setRegistry(classBusiness.getName(), serverContainer.getComponent(classBusiness.getSimpleName()));
         }
 
         this.container = serverContainer;
         this.container.start();
-
+//
+//        for (Class classBusiness: applicationConfig.getAllBusinessComponentsClass()) {
+//
+//        }
         annuaire.addObserver(this);
     }
 

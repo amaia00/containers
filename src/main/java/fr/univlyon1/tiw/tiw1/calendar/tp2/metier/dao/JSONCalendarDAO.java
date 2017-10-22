@@ -40,12 +40,12 @@ public class JSONCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
     }
 
     @Override
-    public void saveEvent(Event event, CalendarEntity calendarImpl) {
+    public void saveEvent(String name, Event event) {
         //TODO: à implémenter
     }
 
     @Override
-    public void deleteEvent(Event event, CalendarEntity calendarImpl) {
+    public void deleteEvent(String name, Event event) {
         //TODO: à implémenter
     }
 

@@ -10,8 +10,6 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.UUID;
-
 /**
  * @author Amaia Nazábal
  * @version 1.0
@@ -26,20 +24,7 @@ public class CalendarAdd extends CalendarImpl {
 
     @Override
     protected Event addEvent(EventDTO eventDTO) {
-
-        Event event = new Event(eventDTO, this.parseDate(eventDTO.getStart()),
-                this.parseDate(eventDTO.getEnd()));
-        event.setId(UUID.randomUUID().toString());
-
-        getEventContainer().add(event);
-
-        try {
-            dao.saveEvent(event, getEntity());
-            LOG.debug("DAO called in addEvent");
-        } catch (Exception e) {
-            LOG.error("Error in addEvent", e);
-        }
-        return event;
+        return getEventContainer().add(eventDTO);
     }
 
     @Override

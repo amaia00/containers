@@ -5,6 +5,7 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.util.Command;
 import org.picocontainer.Startable;
 
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Amaia Nazábal
@@ -27,16 +28,8 @@ public interface Calendar extends Startable {
     Object process(Command command, EventDTO eventDTO) throws ObjectNotFoundException;
 
     Collection<Event> getEvents();
-//
-//    Event addEvent(EventDTO eventDTO);
-//
-//    Event findEvent(EventDTO eventDTO) throws ObjectNotFoundException;
-//
-//    void removeEvent(EventDTO eventDTO) throws ObjectNotFoundException;
-//
-//
-//    abstract void synchronizeEvents();
-//
-//    abstract String getInfo();
 
+    String formatDate(Date d);
+
+    Date parseDate(String s);
 }

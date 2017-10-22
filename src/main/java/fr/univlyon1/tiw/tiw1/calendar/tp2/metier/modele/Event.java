@@ -28,14 +28,6 @@ public class Event implements Startable {
         this.end = end;
     }
 
-//    public Event(String title, String description, Date start, Date end, String id) {
-//        this.title = title;
-//        this.description = description;
-//        this.start = start;
-//        this.end = end;
-//        this.id = id;
-//    }
-
     public String getTitle() {
         return title;
     }
@@ -81,8 +73,8 @@ public class Event implements Startable {
     // On approxime les dates à la précision du format près, ça suffit bien...
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
+//        if (this == o)
+//            return true;
 
         if (o == null)
             return false;
@@ -92,8 +84,13 @@ public class Event implements Startable {
 
         Event event = (Event) o;
 
-        long durationStart = this.start.getTime() - event.getStart().getTime();
-        long durationEnd = this.end.getTime() - event.getEnd().getTime();
+        try {
+            long durationStart = this.start.getTime() - event.getStart().getTime();
+            long durationEnd = this.end.getTime() - event.getEnd().getTime();
+
+        } catch (NullPointerException e) {
+            // TODO: ADD LOG
+        }
 
         // TODO comparaison de temps
         return this.title.equals(event.title) &&
@@ -102,7 +99,6 @@ public class Event implements Startable {
 
     @Override
     public void start() {
-        System.out.println("Event demarré: ".concat(this.toString()));
     }
 
     @Override

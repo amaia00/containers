@@ -21,7 +21,11 @@ public class Annuaire extends Observable {
     }
 
     public void setRegistry(RegistryVariable variable, Object context) {
-        this.registry.put(variable.getContextName(), context);
+        setRegistry(variable.getContextName(), context);
+    }
+
+    public void setRegistry(String variable, Object context) {
+        this.registry.put(variable, context);
         setChanged();
         notifyObservers(context);
     }

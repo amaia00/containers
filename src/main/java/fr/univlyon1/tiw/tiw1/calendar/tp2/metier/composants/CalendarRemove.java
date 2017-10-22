@@ -7,8 +7,6 @@ import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.EventContainer;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Amaia Nazábal
@@ -16,7 +14,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.0 10/20/17.
  */
 public class CalendarRemove extends CalendarImpl {
-    private static final Logger LOG = LoggerFactory.getLogger(CalendarRemove.class);
 
     public CalendarRemove(Config config, Annuaire annuaire, EventContainer eventContainer) {
         super(config, annuaire, eventContainer);
@@ -34,11 +31,7 @@ public class CalendarRemove extends CalendarImpl {
 
     @Override
     protected void removeEvent(EventDTO eventDTO) throws ObjectNotFoundException {
-
-        Event event = new Event(eventDTO, this.parseDate(eventDTO.getStart()),
-                this.parseDate(eventDTO.getEnd()));
-
-        getEventContainer().remove(event);
+        getEventContainer().remove(eventDTO);
     }
 
     @Override

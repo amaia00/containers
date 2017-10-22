@@ -71,7 +71,13 @@ public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
     }
 
     @Override
-    public void saveEvent(Event event, CalendarEntity calendar) {
+    public void saveEvent(String name, Event event) {
+        CalendarEntity calendar = null;
+        try {
+            calendar = loadCalendar(name);
+        } catch (CalendarNotFoundException e) {
+            LOG.error(e.getMessage());
+        }
         if (!calendar.getEvent().contains(event)) {
             calendar.getEvent().add(event);
         }
@@ -79,9 +85,16 @@ public class XMLCalendarDAO implements ICalendarDAO, ICalendarMarshaller {
     }
 
     @Override
-    public void deleteEvent(Event event, CalendarEntity calendar) {
-        Event evn = findEvent(event, calendar);
-        calendar.getEvent().remove(evn);
+    public void deleteEvent(String name, Event event) {
+        CalendarEntity calendar = null;
+        try {
+            calendar = loadCalendar(name);
+            Event evn = findEvent(event, calendar);
+            calendar.getEvent().remove(evn);
+        } catch (CalendarNotFoundException e) {
+            LOG.error(e.getMessage());
+        }
+
         saveCalendar(calendar);
     }
 

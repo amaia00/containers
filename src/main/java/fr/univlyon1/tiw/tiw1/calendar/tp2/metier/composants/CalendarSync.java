@@ -1,14 +1,14 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.composants;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.config.Config;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao.CalendarNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
-import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.*;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarImpl;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.EventContainer;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.ObjectNotFoundException;
 import fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire.Annuaire;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
 
 /**
  * @author Amaia Nazábal
@@ -39,12 +39,12 @@ public class CalendarSync extends CalendarImpl {
 
     @Override
     protected void synchronizeEvents() {
-        try {
-            CalendarEntity tmp = dao.loadCalendar(getName());
-            getEventContainer().sync(new ArrayList<>(tmp.getEvent()));
-        } catch (CalendarNotFoundException e) {
-            LOG.error("Error while loading calendar", e);
-        }
+//        try {
+//            CalendarEntity tmp = dao.loadCalendar(getName());
+            getEventContainer().sync();
+//        } catch (CalendarNotFoundException e) {
+//            LOG.error("Error while loading calendar", e);
+//        }
     }
 
     @Override

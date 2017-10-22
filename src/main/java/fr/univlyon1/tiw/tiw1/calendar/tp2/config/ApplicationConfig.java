@@ -70,4 +70,12 @@ public class ApplicationConfig {
 
         return classDAO;
     }
+
+
+    public int getMaxInstances() {
+        NodeList list = document.getElementsByTagName("pool-instances");
+        Element element = (Element) list.item(0);
+
+        return Integer.parseInt(element.getElementsByTagName("max-instances").item(0).getTextContent());
+    }
 }

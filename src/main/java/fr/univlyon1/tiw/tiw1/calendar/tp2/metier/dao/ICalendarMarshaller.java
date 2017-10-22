@@ -1,6 +1,7 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dao;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.CalendarEntity;
+import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele.Event;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
@@ -9,7 +10,7 @@ import java.io.Writer;
 
 public interface ICalendarMarshaller {
 
-    void saveCalendar(CalendarEntity calendarImpl);
+    void saveEvent(String name, Event event);
 
     /**
      * Writes an calendarImpl to an output stream

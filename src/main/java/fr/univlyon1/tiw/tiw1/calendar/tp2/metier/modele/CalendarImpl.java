@@ -16,10 +16,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
 
-public abstract class CalendarImpl implements Calendar, Observer {
+public abstract class CalendarImpl implements Calendar {
     private static final Logger LOG = LoggerFactory.getLogger(CalendarImpl.class);
 
     private CalendarEntity entity;
@@ -29,7 +27,6 @@ public abstract class CalendarImpl implements Calendar, Observer {
 
     public CalendarImpl(Config config, Annuaire annuaire, EventContainer eventContainer) {
         this.config = config;
-        annuaire.addObserver(this);
         this.eventContainer = eventContainer;
         try {
             this.entity = (CalendarEntity) ((CalendarContext)annuaire.getRegistry(RegistryVariable.CONTEXT_BUSINESS))
@@ -75,7 +72,7 @@ public abstract class CalendarImpl implements Calendar, Observer {
         }
 
         /* We add this line for keep the consistence between the container and the mapping class */
-        entity.sync(getEventContainer().list());
+//        entity.sync(getEventContainer().list());
         return reponse;
     }
 
@@ -102,11 +99,11 @@ public abstract class CalendarImpl implements Calendar, Observer {
      */
     protected abstract String getInfo();
 
-    protected String formatDate(Date d) {
+    public String formatDate(Date d) {
         return new SimpleDateFormat(this.config.getProperty(Config.DATE_FORMAT)).format(d);
     }
 
-    protected Date parseDate(String s) {
+    public Date parseDate(String s) {
         try {
             return new SimpleDateFormat(this.config.getProperty(Config.DATE_FORMAT)).parse(s);
         } catch (ParseException e) {
@@ -130,14 +127,14 @@ public abstract class CalendarImpl implements Calendar, Observer {
         System.out.println("LIFE CYCLE: CalendarImpl detenu. Objet d'accès aux données : ".concat(this.toString()));
     }
 
-    public void update(Observable o, Object arg) {
-        try {
-            this.entity = (CalendarEntity) ((CalendarContext) arg).getContextVariable(ContextVariable.ENTITY);
-            this.dao = (ICalendarDAO) ((CalendarContext) arg).getContextVariable(ContextVariable.DAO);
-        } catch (InvalidClassException e) {
-            LOG.error(e.getMessage());
-        }
-    }
+//    public void update(Observable o, Object arg) {
+//        try {
+//            this.entity = (CalendarEntity) ((CalendarContext) arg).getContextVariable(ContextVariable.ENTITY);
+//            this.dao = (ICalendarDAO) ((CalendarContext) arg).getContextVariable(ContextVariable.DAO);
+//        } catch (InvalidClassException e) {
+//            LOG.error(e.getMessage());
+//        }
+//    }
 
     protected EventContainer getEventContainer() {
         return eventContainer;
