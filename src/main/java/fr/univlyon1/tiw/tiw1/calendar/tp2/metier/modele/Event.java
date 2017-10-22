@@ -1,18 +1,20 @@
 package fr.univlyon1.tiw.tiw1.calendar.tp2.metier.modele;
 
 import fr.univlyon1.tiw.tiw1.calendar.tp2.metier.dto.EventDTO;
+import org.picocontainer.Startable;
+import org.picocontainer.annotations.Inject;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Date;
 
 @XmlType(propOrder = {"id", "title", "start", "end", "description"})
-public class Event {
-    private String title;
-    private String description;
-    private Date start;
-    private Date end;
-    private String id;
+public class Event implements Startable {
+    @Inject private String title;
+    @Inject private String description;
+    @Inject private Date start;
+    @Inject private Date end;
+    @Inject private String id;
 
     public Event() {
 
@@ -26,13 +28,13 @@ public class Event {
         this.end = end;
     }
 
-    public Event(String title, String description, Date start, Date end, String id) {
-        this.title = title;
-        this.description = description;
-        this.start = start;
-        this.end = end;
-        this.id = id;
-    }
+//    public Event(String title, String description, Date start, Date end, String id) {
+//        this.title = title;
+//        this.description = description;
+//        this.start = start;
+//        this.end = end;
+//        this.id = id;
+//    }
 
     public String getTitle() {
         return title;
@@ -96,5 +98,15 @@ public class Event {
         // TODO comparaison de temps
         return this.title.equals(event.title) &&
                 this.description.equals(event.description);
+    }
+
+    @Override
+    public void start() {
+        System.out.println("Event demarré: ".concat(this.toString()));
+    }
+
+    @Override
+    public void stop() {
+
     }
 }

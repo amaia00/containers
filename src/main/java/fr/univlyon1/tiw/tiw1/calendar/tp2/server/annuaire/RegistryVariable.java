@@ -6,10 +6,10 @@ package fr.univlyon1.tiw.tiw1.calendar.tp2.server.annuaire;
  * @since 1.0 10/21/17.
  */
 public enum RegistryVariable {
-    CONTEXT_ROOT("racine"),
-    CONTEXT_APPLICATION("application"),
-    CONTEXT_PERSISTENCE("persistence"),
-    CONTEXT_BUSINESS("metier");
+    CONTEXT_ROOT("server"),
+    CONTEXT_APPLICATION("calendar"),
+    CONTEXT_PERSISTENCE("dao"),
+    CONTEXT_BUSINESS("events");
 
     private String context;
 

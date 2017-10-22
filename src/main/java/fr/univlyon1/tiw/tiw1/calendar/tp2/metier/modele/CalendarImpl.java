@@ -32,9 +32,9 @@ public abstract class CalendarImpl implements Calendar, Observer {
         annuaire.addObserver(this);
 
         try {
-            this.entity = (CalendarEntity) annuaire.getRegistry(RegistryVariable.CONTEXT_BUSINESS)
+            this.entity = (CalendarEntity) ((CalendarContext)annuaire.getRegistry(RegistryVariable.CONTEXT_BUSINESS))
                     .getContextVariable(ContextVariable.ENTITY);
-            this.dao = (ICalendarDAO) annuaire.getRegistry(RegistryVariable.CONTEXT_PERSISTENCE)
+            this.dao = (ICalendarDAO) ((CalendarContext)annuaire.getRegistry(RegistryVariable.CONTEXT_PERSISTENCE))
                     .getContextVariable(ContextVariable.DAO);
         } catch (InvalidClassException e) {
             LOG.error(e.getMessage());
@@ -81,15 +81,15 @@ public abstract class CalendarImpl implements Calendar, Observer {
         return this.entity.getEvent();
     }
 
-    abstract Event addEvent(EventDTO eventDTO);
+    protected abstract Event addEvent(EventDTO eventDTO);
 
-    abstract Event findEvent(EventDTO eventDTO) throws ObjectNotFoundException;
+    protected abstract Event findEvent(EventDTO eventDTO) throws ObjectNotFoundException;
 
-    abstract void removeEvent(EventDTO eventDTO) throws ObjectNotFoundException;
+    protected abstract void removeEvent(EventDTO eventDTO) throws ObjectNotFoundException;
 
-    abstract void synchronizeEvents();
+    protected abstract void synchronizeEvents();
 
-    void setEvents(Collection<Event> events) {
+    protected void setEvents(Collection<Event> events) {
         this.entity.setEvent(events);
     }
 
@@ -98,7 +98,7 @@ public abstract class CalendarImpl implements Calendar, Observer {
      *
      * @return une string formattée contentant toutes les infos des événements de l'calendar
      */
-    abstract String getInfos();
+    protected abstract String getInfos();
 
     protected String formatDate(Date d) {
         return new SimpleDateFormat(this.config.getProperty(Config.DATE_FORMAT)).format(d);

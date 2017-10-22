@@ -18,20 +18,31 @@ public class CalendarContextImpl implements CalendarContext{
 
     @Override
     public Object getContextVariable(ContextVariable variable) throws InvalidClassException {
+        return getContextVariable(variable.getVariable());
+    }
+
+    @Override
+    public Object getContextVariable(String variable) throws InvalidClassException {
         Throwable t = new Throwable();
         StackTraceElement[] elements = t.getStackTrace();
 
         String className = elements[2].getClassName();
 
         // FIXME: remove naivemethodaccessor (?) for test purposes
-        if (className.matches("(.*).Calendar(Add|Remove|List|Find|Sync)") || className.contains("Main") || className.equals("sun.reflect.NativeMethodAccessorImpl"))
-            return contextVariables.get(variable.getVariable());
+        if (className.matches("(.*).Calendar(Add|Remove|List|Find|Sync|Impl|UI)") || className.contains("Main") || className.equals("sun.reflect.NativeMethodAccessorImpl"))
+            return contextVariables.get(variable);
 
         throw new InvalidClassException("The caller class should be a calendar. Founded class: ".concat(className) );
+
     }
 
     @Override
     public void setContextVariable(ContextVariable variable, Object contextVariable) {
-        this.contextVariables.put(variable.getVariable(), contextVariable);
+        setContextVariable(variable.getVariable(), contextVariable);
+    }
+
+    @Override
+    public void setContextVariable(String variable, Object contextVariable) {
+        this.contextVariables.put(variable, contextVariable);
     }
 }

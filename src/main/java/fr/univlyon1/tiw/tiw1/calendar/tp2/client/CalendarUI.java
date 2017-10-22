@@ -24,7 +24,7 @@ public class CalendarUI implements Observer{
 
     public CalendarUI(Annuaire annuaire) throws InvalidClassException {
         annuaire.addObserver(this);
-        this.calendarServerImpl = (Server) annuaire.getRegistry(RegistryVariable.CONTEXT_ROOT)
+        this.calendarServerImpl = (Server)((CalendarContext)annuaire.getRegistry(RegistryVariable.CONTEXT_ROOT))
                 .getContextVariable(ContextVariable.REQUEST);
 
     }

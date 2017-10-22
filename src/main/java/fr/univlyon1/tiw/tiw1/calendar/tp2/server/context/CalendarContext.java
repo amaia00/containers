@@ -11,5 +11,9 @@ public interface CalendarContext {
 
     Object getContextVariable(ContextVariable variable) throws InvalidClassException;
 
+    Object getContextVariable(String variable) throws InvalidClassException;
+
     void setContextVariable(ContextVariable variable, Object contextVariable);
+
+    void setContextVariable(String variable, Object contextVariable);
 }

@@ -4,3 +4,4 @@ target
 .project
 .nbproject
 .classpath
+!/src/main/java/fr/univlyon1/tiw/tiw1/calendar/tp2/metier/modele/EventContainer.java
